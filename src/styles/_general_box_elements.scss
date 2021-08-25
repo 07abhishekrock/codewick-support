@@ -1,0 +1,233 @@
+@use './variables' as variables;
+
+h1.main-heading{
+    color:variables.$primary_color;
+    font-size:1.5em;
+    margin:0px;
+    margin-bottom:1em;
+    font-weight:750;
+}
+
+p.para-desc{
+    font-size:1.1em;
+    margin-bottom:1.5em;
+}
+
+h4.line-heading{
+    font-size:0.9em;
+    margin:0px;
+    margin-top:0.5em;
+}
+
+div.peek-grid{
+    margin-top: 0px;
+    margin-bottom:1.5em;
+    display:grid;
+    border:2px solid black;
+    padding:1em;
+    border-radius:0.3em;
+    grid-template-columns: repeat(2 , 1fr);
+    background-color:#fafafa;
+    border:2px solid #eaeaea;
+    gap:0.5em 0px;
+    &>*:not(:last-child){
+        margin-right:0.5em;
+        flex-shrink:0;
+    }
+    &>input{
+        width:100%;
+        box-sizing: border-box;
+    }
+    @media screen and (max-width:850px) {
+        grid-template-columns:repeat(1 , 1fr); 
+        font-size:0.9em;
+    }
+}
+
+div.fancy-peek-element{
+    border-radius:0.2em;
+    display:grid;
+    grid-template-columns: 50% 50%;
+    overflow:hidden;
+    &>*{
+        text-transform:uppercase;
+        font-weight:bolder;
+        padding:0.3em 0px;
+        justify-self:flex-start;
+    }
+    &>span{
+        font-weight: 900;
+    }
+    &>div{
+        font-style:normal;
+        &[status_type]{
+            padding:0.3em 1em;
+            border-radius:3em;
+            display:grid;
+            place-items:center;
+        }
+    }
+}
+
+span.inline-progress-bar{
+    border:2px solid #292929;
+    display:block;
+    border-radius:0.3em;
+    position:relative;
+    width:100px;
+    height:100%;
+    &>i{
+        position:absolute;
+        height:100%;
+        background-color:#292929;
+        left:0px;
+        top:0px;
+    }
+}
+
+div.tabs-wrapper{
+    display:flex;
+    & label{
+        margin-right:0.5em;
+        color:gray;
+        cursor:pointer;
+        &:hover{
+            color:#404040;
+        }
+    }
+    & input{
+        display:none;
+        &:checked+label{
+            color:black;
+        }
+    }
+}
+
+div.updates-section{
+    margin-bottom:1.5em;
+}
+
+form.edit-issue-form{
+    position:relative;
+}
+
+div.input-group{
+    font-size:1em;
+    display:grid;
+    grid-template-columns:150px calc(100% - 150px);
+    align-items:flex-end;
+    &:not(:last-child){
+        margin-bottom:1em;
+    }
+    &>*{
+        font-size:inherit;
+        color:inherit;
+    }
+    &.single-column{
+        display:block;
+        &>label{
+            margin-bottom:0.3em;
+        }
+        &>textarea{
+            display:block;
+            width:100%;
+        }
+    }
+    &>label{
+        font-weight:700;
+        font-size:1.1em;
+        display:block;
+    }
+    &>input , &>textarea{
+        padding:0.3em 0.5em;
+        border-radius:0.2em;
+        border:2px solid lightgray;
+        font-size:inherit;
+        font-family:inherit;
+    }
+    &>select{
+        padding:0.3em;
+        justify-self:flex-start;
+        background-color:white;
+        border:2px solid lightgray;
+        border-radius:0.3em;
+    }
+}
+
+div.ql-toolbar{
+    border:2px solid lightgray !important;
+    border-radius:0.3em 0.3em 0px 0px;
+}
+div.quill-editor{
+    border-radius:0px 0px 0.3em 0.3em;
+    border:2px solid lightgray!important;
+    border-top:0px !important;
+    font-family:inherit!important;
+    &~button{
+        background:white;
+        border:2px solid currentColor;
+        padding:0.3em 0.5em;
+        border-radius:0.2em;
+        margin-top:0.8em;
+        color:#292929;
+        font-size:0.9em;
+        cursor:pointer;
+        font-weight:bold;
+    }
+    &~button.reset{
+        color:red;
+        margin-left:1em;
+    }
+}
+
+div.updates-section{
+    margin:1.5em 0px;
+    margin-bottom:3em;
+}
+
+div.single-note-item-wrapper{
+    display:flex;
+    align-items:flex-end;
+    margin-bottom:1.5em;
+    &>div.single-note-item-data{
+        border-left:1.5px solid gray;
+        border-bottom:1.5px solid gray;
+        border-radius:0px 0px 0px 0.5em;
+        padding:0.5em;
+        flex-grow:1;
+        margin-left:1em;
+        &>ul , &>ol{
+            padding-left: 1.5em;
+        }
+    }
+    &>div.single-note-item-profile{
+        display:flex;
+        flex-flow:column;
+        align-items:center;
+        font-size:0.9em;
+        @media screen and (max-width:500px){
+            font-size:0.8em;
+        }
+        &>i{
+            font-size:1em;
+            border-radius:50%;
+            width:35px;
+            height:35px;
+            background-color:black;
+            display:grid;
+            place-items:center;
+            &[manager]{
+                color:gold;
+            }
+        }
+        &>span:first-of-type{
+            font-weight:bold;
+            margin-top:0.5em;
+        }
+        &>span:last-child{
+            color:#111;
+            font-weight:550;
+        }
+    }
+
+}

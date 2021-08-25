@@ -1,0 +1,291 @@
+@use './variables' as variables;
+div.project-background{
+    background-position:center;
+    background-image:url('../images/background.svg');
+    position:relative;
+    min-height:500px;
+    padding-bottom:2em;
+    &::after{
+        top:0px;
+        left:0px;
+        width:100%;
+        height:450px;
+        background-color:variables.$primary_color;
+        content: "";
+        position:fixed;
+        z-index:0;
+    }
+    &>div.project-options-wrapper{
+        position:absolute;
+        z-index:100;
+        right:1em;
+        top:1em;
+        &>span{
+            background-color:white;
+            display:inline-flex;
+            justify-content: space-between;
+            align-items:center;
+            width:130px;
+            padding:0.3em 0.5em;
+            border-radius:0.2em;
+            font-weight:550;
+        }
+        &>div.project-options{
+            display:flex;
+            flex-flow:column;
+            background-color:white;
+            border-radius:0.2em;
+            margin-top:0.5em;
+            padding:0.5em;
+            &[visible="0"]{
+                display:none;
+            }
+            &>a{
+                display:flex;
+                align-items:center;
+                justify-content: space-between;
+                margin-bottom:0.5em;
+                font-weight:550;
+                color:inherit;
+                text-decoration:none;
+                text-transform:capitalize;
+                cursor:pointer;
+                &:hover{
+                    &>svg{
+                        color:variables.$primary_color;
+                    }
+                }
+            }
+        }
+    }
+    &>div.project-container{
+        position:relative;
+        z-index:1;
+        &>div.project-heading{
+            padding:1em;
+            text-align:center;
+            padding-top:4em;
+            color:white;
+            &>h1{
+                text-transform:uppercase;
+                margin:0px;
+                font-size:2.5em;
+                font-weight:800;
+                @media only screen and (max-width:600px) {
+                    font-size:1.5em; 
+                }
+            }
+            &>span{
+                font-weight:600;
+                margin-top:0.2em;
+                display:block;
+                font-size:1.2em;
+            }
+        }
+        &>div.project-overview-grid{
+            display:grid;
+            grid-template-columns : repeat(3 , 1fr);
+            justify-items:center;
+            margin:3em 0px;
+            @media only screen and (max-width:1100px) {
+                grid-template-columns: repeat(2 , 1fr); 
+                grid-gap:3em 1em;
+            }
+            @media only screen and (max-width:800px) {
+                grid-template-columns:1fr;
+                grid-gap:3em 1em;
+            }
+            &>div{
+                &:first-child{
+                    justify-self: flex-end;
+                }
+                &:nth-child(2){
+                    justify-self: center;
+                }
+                &:last-child{
+                    justify-self: flex-start;
+                }
+                @media only screen and (max-width:1100px) {
+                    &:first-child{
+                        justify-self: initial;
+                    }
+                    &:nth-child(2){
+                        justify-self:center;
+                    }
+                    &:last-child{
+                        justify-self: center;
+                        grid-column: 1 / 3;
+                    }
+                }
+                @media only screen and (max-width:800px){
+                    &:last-child{
+                        grid-column:initial;
+                    }
+                }
+                background-color:white;
+                border-radius:0.3em;
+                box-shadow: 0px 0px 25px 5px #00000020;
+                width:320px;
+                padding:1.5em 2em;
+                align-self:flex-start;
+                &.project-issue-tracker{
+                    &>div.issue-wrapper{
+                        margin-bottom:1.5em;
+                        &.features{
+                            &>h3{
+                                color:variables.$feature_label_color;
+                            }
+                            &>div.issue-numbers-grid{
+                                &>div.issue-numbers:last-child{
+                                    color:variables.$feature_label_color;
+                                    border:2px solid currentColor;
+                                }
+                            }
+                        }
+                        &.bugs{
+                            &>h3{
+                                color:variables.$bug_label_color;
+                            }
+                            &>div.issue-numbers-grid{
+                                &>div.issue-numbers:last-child{
+                                    color:variables.$bug_label_color;
+                                    border:2px solid currentColor;
+                                }
+                            }
+                        }
+                        &>h3{
+                            margin:0px;
+                            margin-bottom:0.6em;
+                            font-size:1.3em;
+                            padding-bottom:0.1em;
+                            padding-right:0.5em;
+                            width:fit-content;
+                            border-bottom:3px solid currentColor;
+                            &>svg{
+                                margin-right:0.3em;
+                            }
+                        }
+                        &>div.issue-numbers-grid{
+                            display:grid;
+                            grid-template-columns: repeat(3 , 1fr);
+                            &>div.issue-numbers{
+                                justify-self: flex-start;
+                                text-align:center;
+                                font-size:1.5em;
+                                font-weight:700;
+                                padding:0.3em;
+                                border-radius:0.2em;
+                                &>i{
+                                    font-style:normal;
+                                    display:block;
+                                    font-size:0.6em;
+                                    font-weight:600;
+                                }
+                                &:nth-child(2){
+                                    justify-self: center;
+                                }
+                                &:nth-child(3){
+                                    justify-self: end;
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                &.project-time-tracker{
+                    &>i{
+                        font-size: 4em;
+                        color:variables.$primary_color;
+                        text-align:center;
+                        display:block;
+                    }
+                    &>h3{
+                        text-align:center;
+                        font-size:1.4em;
+                        margin:0px;
+                        margin-top:0.3em;
+                    }
+                    &>h2{
+                        font-size:1.8em;
+                        text-align:center;
+                    }
+                }
+                &.project-members{
+                    padding-left:0px;
+                    padding-right:0px;
+                    padding-bottom:0px;
+                    overflow: hidden;
+                    color:#292929;
+                    &>i{
+                        display:block;
+                        text-align:center;
+                        font-size:4em;
+                    }
+                    &>h2{
+                        margin:0px;
+                        margin-bottom:1em;
+                        text-align:center;
+                    }
+                    &>div.members-list{
+                        display:flex;
+                        flex-wrap:wrap;
+                        margin-bottom:1.5em;
+                        justify-content: center;
+                        &>a{
+                            margin:0.3em;
+                            border-radius:0.3em;
+                            border:2px solid #292929;
+                            font-size:0.9em;
+                            padding:0.3em 0.5em;
+                            display:inline-flex;
+                            align-items:center;
+                            font-weight:550;
+                            justify-content: space-between;
+                            &>svg{
+                                margin-right:0.3em;
+                            }
+                        }
+                        &.managers{
+                            &>a{
+                                color:white;
+                                background:#292929;
+                                &>svg{
+                                    color:gold;
+                                }
+                            }
+                        }
+                        &.developers{
+                            background-color:#f8f8f8;
+                            &>a{
+                                border:0px;
+                                &>svg{
+                                    margin-right:0.5em;
+                                    font-size:0.8em;
+                                    color:variables.$primary_color;
+                                }
+                            }
+                            margin-bottom:0px;
+                            padding:1em;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+div.buttons-grp{
+    display:flex;
+    margin-top:2em;
+    &>button{
+        flex-grow:1;
+        padding:0.5em;
+        border:2px solid black;
+        border-radius:0.3em;
+        font-weight:550;
+        background-color:transparent;
+        &:not(:last-child){
+            margin-right:0.5em;
+        }
+    }
+}

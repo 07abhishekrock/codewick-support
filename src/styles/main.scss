@@ -1,0 +1,29 @@
+@use './variables' as variables;
+@use './navbar' as navbar;
+@use './issue_item' as issue_item;
+@use './projects' as projects;
+@use './general_list' as generalList;
+@use './general_box_elements' as general_box;
+@use './login' as login;
+body , html{
+    width:100%;
+    height:auto;
+    margin:0px;
+    padding:0px;
+}
+
+.box-heading{
+    padding:0.3em 0.5em;
+    display:block;
+    width:fit-content;
+    font-size:0.9em;
+    border-radius:0.2em;
+    margin:0px;
+    border:2px solid currentColor;
+    margin-bottom:1em;
+    font-weight:800;
+    text-transform:uppercase;
+    @media screen and (max-width:450px){
+        font-size:0.75em;
+    }
+}
