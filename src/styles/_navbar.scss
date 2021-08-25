@@ -1,0 +1,106 @@
+@use './variables' as variables;
+nav{
+    position:relative;
+    z-index:10;
+    padding:1em;
+    @media screen and (max-width:400px){
+        padding:0px 0.5em;
+        padding-top:1em;
+    }
+    padding-bottom:0px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    background-color: variables.$super_light_gray_color;
+    border-bottom:2px solid variables.$primary_color;
+    // box-shadow:0px 4px 5px 0px rgba(0, 0, 0, 0.1);
+    @media screen and (max-width:840px){
+        flex-flow:column;
+        &>div.search-bar{
+            margin:1em 0px;
+            display:none;
+            &[visible="1"]{
+                display:block;
+            }
+            &:focus-within , &:focus-visible , &:focus{
+                display:block!important;
+            }
+        }
+        &>div.logo-nav-wrapper{
+            text-align:center;
+            &>div.logo-with-label{
+                display:grid;
+                grid-template-columns: 1fr!important;
+                justify-items:center!important;
+            }
+        }
+    }
+    &>div.search-bar{
+        background-color:white;
+        padding:0.3em 0.5em;
+        padding-right:1em;
+        border:2px solid lightgray;
+        border-radius:0.3em;
+        &:focus , &:focus-within{
+            border-color:black;
+            &>input{
+                color:black;
+                outline:None;
+            }
+            &>i{
+                color:black;
+            }
+        }
+        &>i{
+            color:lightgray;
+        }
+        &>input{
+            font-family:inherit;
+            padding:0.3em;
+            width:280px;
+            color:gray;
+            font-size:1em;
+            border:0px solid black;
+        }
+    }
+    &>div.logo-nav-wrapper{
+        &>div.logo-with-label{
+            display:grid;
+            grid-template-columns:2em 1fr;
+            grid-gap:0.8em;
+            &>i{
+                width:2em;
+                height:2em;
+                border-radius:50%;
+                background-color:gray;
+                margin-right:0.5em;
+                grid-row: 1 / 3;
+            }
+            &>h2{
+                margin:0px;
+                font-weight:700;
+                &>i{
+                    font-style:normal;
+                    color:variables.$primary_color;
+                }
+            }
+            &>div.nav-links{
+                &>a{
+                    display:inline-block;
+                    margin-right:1em;
+                    font-weight:700;
+                    cursor:pointer;
+                    text-transform:uppercase;
+                    font-size:0.9em;
+                    &[select="1"]{
+                        font-weight:800;
+                        padding:0.4em 0.8em;
+                        border-radius:0.5em 0.5em 0px 0px;
+                        color:white;
+                        background-color:variables.$primary_color;
+                    }
+                }
+            }
+        }
+    }
+}
