@@ -1,0 +1,58 @@
+import React, { useEffect , useState , useContext } from 'react'
+import { Link } from 'react-router-dom'
+import { LoadingContext } from '../../utils/contexts';
+import {useFetch} from '../../utils/hooks';
+
+function SingleProject({
+    title,
+    description,
+    id
+}){
+    return (
+        <Link to={`./project/${id}/`} className="single-project">
+            <h2>{title}</h2>
+            <span>{description || 'No Description Provided'}</span>
+        </Link>
+    )
+}
+
+function AllProjectsWrapper() {
+    const user_id = JSON.parse(localStorage.getItem('user'))._id;
+    const [all_projects , set_all_projects] = useState([]);
+    const [{
+        loading, 
+        loadingText,
+        error,
+        retryCallback
+    }, dispatch_load_object] = useContext(LoadingContext); 
+    const data = useFetch(`https://api-redmine.herokuapp.com/api/v1/project?user=${user_id}`,'GET',true,{},
+    ()=>{
+        dispatch_load_object(['load',"Loading All Projects"]);
+    }
+    ,
+    (resp)=>{
+        set_all_projects(resp.data && resp.data.data);
+        dispatch_load_object(['idle']);
+    },
+    (error)=>{
+        console.log('error occurred')
+        dispatch_load_object('error' , {
+            error,
+            onRetry : ()=>{
+                console.log('can retry now');
+            }
+        })
+    });
+    return (
+        <div className="all-projects-grid">
+            {all_projects && all_projects.length === 0 ? <SingleProject title="No Projects Found" slug="Create A New Project"/> : null}
+            {all_projects && all_projects.map((project)=>{
+                return (
+                    <SingleProject {...project} key={project.id} id={project.id}/>
+                )
+            })}
+        </div>
+    )
+}
+
+export default AllProjectsWrapper

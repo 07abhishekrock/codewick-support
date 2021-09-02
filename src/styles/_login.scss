@@ -16,7 +16,7 @@ div.login-container{
             color:variables.$primary_color;
         }
     }
-    &>div.login-form-input-group{
+    & div.login-form-input-group{
         width:80%;
         display:block;
         margin:0 auto;
@@ -34,9 +34,14 @@ div.login-container{
             border:2px solid lightgray;
             width:100%;
         }
+        &>i{
+            color:red;
+            font-size:0.6em;
+            font-style:normal;
+        }
         margin-bottom:1.2em;
     }
-    &>button{
+    & button{
         display:block;
         width:80%;
         margin:1.2em auto;

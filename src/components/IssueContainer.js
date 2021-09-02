@@ -11,11 +11,11 @@ export const __TRACKER_BUG__ = 1;
 
 export function returnStatusFromCode(status_index){
     switch(status_index){
-        case __NEW__ : return "New";
-        case __RESOLVED__ : return "Resolved";
-        case __CODE_IN_REVIEW__ : return 'Code Review';
-        case __CLOSED__ : return 'Closed';
-        case __IN_PROGRESS__ : return 'In Progress';
+        case "new" : return __NEW__;
+        case "resolved" : return __RESOLVED__;
+        case "codeReview" : return __CODE_IN_REVIEW__;
+        case "closed" : return __CLOSED__;
+        case "inProgress" : return __IN_PROGRESS__;
         default : return 'Invalid'
     }
 }
@@ -69,7 +69,7 @@ const IssueItem = ({
                     <span id="issue-tracker" tracker_type={issue_tracker}>{issue_tracker === 0 ? "Feature" : "Bug"}</span>
                 </div>
                 <span status_type={issue_status}>
-                    {returnStatusFromCode(issue_status)}
+                    {issue_status || "New"}
                 </span>
             </div>
 

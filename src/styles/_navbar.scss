@@ -12,9 +12,8 @@ nav{
     align-items:center;
     justify-content: space-between;
     background-color: variables.$super_light_gray_color;
-    border-bottom:2px solid variables.$primary_color;
-    // box-shadow:0px 4px 5px 0px rgba(0, 0, 0, 0.1);
-    @media screen and (max-width:840px){
+    box-shadow:0px 4px 5px 0px rgba(0, 0, 0, 0.1);
+    @media screen and (max-width:900px){
         flex-flow:column;
         &>div.search-bar{
             margin:1em 0px;
@@ -33,6 +32,47 @@ nav{
                 grid-template-columns: 1fr!important;
                 justify-items:center!important;
             }
+        }
+    }
+    &>div.user-widget{
+        display:inline-block;
+        border-radius:2em;
+        background-color:#292929;
+        color:white;
+        position:fixed;
+        padding:0.4em 0.5em;
+        right:1em;
+        bottom:1em;
+        display:flex;
+        align-items:center;
+        transform:translateX(calc(100% - 1.5em));
+        transition:transform 0.3s ease-in;
+        &:focus , &:focus-within{
+            transform: translateX(0px);
+        }
+        &>i{
+            margin-right:0.8em;
+            font-size:0.8em;
+            width:25px;
+            height:25px;
+            border-radius:50%;
+            background-color:variables.$primary_color;
+            display:grid;
+            place-items:center;
+        }
+        &>span:first-of-type{
+            margin-right:0.5em;
+            font-weight: 550;
+            font-size:1.1em;
+        }
+        &>span:last-child{
+            font-weight:bold;
+            text-transform: uppercase;
+            background-color:#404040;
+            height:100%;
+            padding:0.2em 0.5em;
+            font-size:0.8em;
+            border-radius:3em;
         }
     }
     &>div.search-bar{
@@ -85,6 +125,7 @@ nav{
                 }
             }
             &>div.nav-links{
+                overflow:auto;
                 &>a{
                     display:inline-block;
                     margin-right:1em;
@@ -98,6 +139,12 @@ nav{
                         border-radius:0.5em 0.5em 0px 0px;
                         color:white;
                         background-color:variables.$primary_color;
+                    }
+                    @media only screen and (max-width:500px){
+                        &[select="1"]{
+                            border-radius:0.3em;
+                        }
+                        margin-bottom:0.3em;
                     }
                 }
             }

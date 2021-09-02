@@ -109,13 +109,28 @@ div.updates-section{
 
 form.edit-issue-form{
     position:relative;
+    padding-bottom:2em;
+    &>button{
+        display:block;
+        text-align:center;
+        padding:0.3em 0.5em;
+        margin-left:auto;
+        margin-top:1em;
+        font-size:1.1em;
+        background-color:white;
+        border:2px solid black;
+        border-radius:0.3em;
+        font-weight:550;
+    }
+    &>hr{
+        color:#fafafa;
+    }
 }
 
 div.input-group{
     font-size:1em;
-    display:grid;
-    grid-template-columns:150px calc(100% - 150px);
-    align-items:flex-end;
+    display:flex;
+    align-items:center;
     &:not(:last-child){
         margin-bottom:1em;
     }
@@ -133,10 +148,14 @@ div.input-group{
             width:100%;
         }
     }
+    &.no-grid{
+        display:block !important;
+    }
     &>label{
         font-weight:700;
         font-size:1.1em;
         display:block;
+        margin-right:0.5em;
     }
     &>input , &>textarea{
         padding:0.3em 0.5em;
@@ -187,7 +206,7 @@ div.updates-section{
 
 div.single-note-item-wrapper{
     display:flex;
-    align-items:flex-end;
+    align-items:center;
     margin-bottom:1.5em;
     &>div.single-note-item-data{
         border-left:1.5px solid gray;
@@ -196,8 +215,48 @@ div.single-note-item-wrapper{
         padding:0.5em;
         flex-grow:1;
         margin-left:1em;
+        &[noborder="1"]{
+            border-left:0px;
+            border-bottom:0px;
+        }
         &>ul , &>ol{
             padding-left: 1.5em;
+        }
+        & div.btn-group{
+            display:flex;
+            justify-content:flex-end;
+            &>*:not(:last-child){
+                margin-right:0.3em;
+            }
+        }
+        & button.update-btn{
+            margin:auto 0px;
+            display:block;
+            padding:0.3em 0.5em;
+            border:2px solid black;
+            background:white;
+            border-radius:0.3em;
+            font-weight:600;
+            cursor:pointer;
+            &:hover{
+                &:last-of-type{
+                    border:2px solid red;
+                    background-color:red;
+                }
+                color:white;
+                background-color:black;
+            }
+            margin-top:0.5em;
+            position:relative;
+        }
+        & i.error{
+            color:red;
+            font-style:normal;
+            font-size:0.7em;
+            font-weight: 600;;
+            display:block;
+            text-align:right;
+            margin-top:0.5em;
         }
     }
     &>div.single-note-item-profile{
@@ -216,9 +275,7 @@ div.single-note-item-wrapper{
             background-color:black;
             display:grid;
             place-items:center;
-            &[manager]{
-                color:gold;
-            }
+            color:white;
         }
         &>span:first-of-type{
             font-weight:bold;
