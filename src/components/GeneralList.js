@@ -22,7 +22,7 @@ const GeneralList = (props)=>{
     },[]) 
     return (
         <div className="general-box-wrapper">
-            <div className="general-list-head">
+            <div className="general-list-head" key={"head"}>
                 <h2>{props.heading}</h2>
                 <div className="search-filter-div">
                     {!props.no_search_bar ? 
@@ -62,7 +62,7 @@ const GeneralList = (props)=>{
             <div className="general-list">
                 {props.children}
             </div>
-            <div className="general-list-pagination">
+            <div className="general-list-pagination" key={"pagination"}>
                 <span onClick={props.onPrev}><FontAwesomeIcon icon={faCaretLeft}/>&nbsp;Prev Page</span>
                 <span onClick={props.onNext}>Next Page&nbsp;<FontAwesomeIcon icon={faCaretRight}/></span>
             </div>

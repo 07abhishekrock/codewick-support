@@ -156,13 +156,11 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
             set_search_query={set_search_query} 
             onNext={()=>{
                 if(all_issues.length === LIMIT){
-                    console.log('next page');
                     set_current_page(current_page + 1);
                 }
             }}
             onPrev={()=>{
                 if(current_page > 1){
-                    console.log('prev page');
                     set_current_page(current_page - 1);
                 }
             }} 

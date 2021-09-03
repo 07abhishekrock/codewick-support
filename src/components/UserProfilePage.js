@@ -1,26 +1,69 @@
-import React from 'react'
+import React , {useContext} from 'react'
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import { LoadingContext } from '../utils/contexts';
 
 function UserProfilePage() {
+    const user_object = JSON.parse(localStorage.getItem('user'));
+    const [,dispatch_load_obj] = useContext(LoadingContext);
+    const user_form = useFormik({
+        initialValues : {
+            name : user_object.name,
+            email : user_object.email,
+            phone : user_object.phone
+        },
+        validationSchema : yup.object({
+            name : yup.string().required(),
+            email : yup.string().email().required(),
+            phone : yup.string().required()
+        }),
+        onSubmit : async (values)=>{
+            try{
+                dispatch_load_obj(['load' , 'Updating Details']);
+                const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user/' + user_object._id , {
+                    method : 'PATCH',
+                    body : JSON.stringify(values),
+                    headers : {
+                        'Authorization' : 'Bearer ' + localStorage.getItem('token')
+                    }
+                }) 
+                if(response.ok){
+                    const data = await response.json();
+                    console.log(data);
+                    dispatch_load_obj(['info', 'Details Updated']);
+                }
+                else{
+                    dispatch_load_obj(['info', 'Some Error Occurred']);
+                }
+            }
+            catch(e){
+                dispatch_load_obj(['info', 'Some Error Occurred']);
+            }
+        }
+    })
     return (
-        <div className="user-profile-page">
+        <form className="user-profile-page" onSubmit = {e => {
+            e.preventDefault();
+            user_form.submitForm();
+        }}>
             <div className="user-profile-image">
-                <img src="https://images.unsplash.com/photo-1614502875832-77fe801288ba?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjF8fHByb2ZpbGUlMjBwaWN8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60"/>
-                <input type="file"/>
+                <img alt="user-image" src={user_object.avator}/>
+                {/* <input type="file"/> */}
             </div>
             <div className="user-profile-input-group">
                 <label>Name</label>
-                <input type="text"/>
+                <input type="text" {...user_form.getFieldProps('name')}/>
             </div>
             <div className="user-profile-input-group">
                 <label>Email</label>
-                <input type="text"/>
+                <input type="text" {...user_form.getFieldProps('email')}/>
             </div>
             <div className="user-profile-input-group">
                 <label>Phone Number</label>
-                <input type="text"/>
+                <input type="text" {...user_form.getFieldProps('phone')}/>
             </div>
             <button>Update</button>
-        </div>
+        </form>
     )
 }
 

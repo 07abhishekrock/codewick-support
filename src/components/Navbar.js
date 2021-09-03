@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch, faTimes, faUser } from "@fortawesome/free-solid-svg-icons"
 import { useEffect, useRef , useState } from "react"
-import { Link, useLocation, useHistory } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 function includesMultiple(target_array , ...target_values){
     let contains = false;
@@ -19,7 +19,6 @@ const NavbarWithSearch = ()=>{
     const [visible , setVisible] = useState(0);
 
     const [current_selected , set_currently_selected] = useState(2);
-    const history = useHistory();
     const routes_array = useLocation().pathname.split('/');
     useEffect(()=>{
         const includesBind = includesMultiple.bind(null , routes_array.slice(1));
@@ -43,7 +42,7 @@ const NavbarWithSearch = ()=>{
         <nav>
             <div className="user-widget" tabIndex="1">
                 <i><FontAwesomeIcon icon={faUser}/></i>
-                <span>{user_object && user_object.name}</span>
+                <Link to="/profile">{user_object && user_object.name}</Link>
                 <span onClick={()=>{
                     localStorage.removeItem('token');
                     window.location.reload();

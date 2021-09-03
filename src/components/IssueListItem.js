@@ -15,7 +15,6 @@ const IssueListItem = ({
     status,
     _id,
 })=>{
-    console.log(priority)
     return (
         <div className="issue-list-item">
             <div className="issue-item-heading">
@@ -47,7 +46,7 @@ const IssueListItem = ({
                 </div>
                 <div className="issue-item-options">
                     <Link to={`../../issues/${_id}`}><FontAwesomeIcon icon={faPenNib}/>Edit Issue</Link>
-                    <a>View Issue</a>
+                    <a>4:00 Hrs</a>
                 </div>
             </div>
         </div>

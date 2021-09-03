@@ -1,8 +1,7 @@
 import NavbarWithSearch from './components/Navbar';
-import IssuesContainer from './components/IssueContainer';
 import ProjectWindowWithBackground, { ProjectPageContext } from './components/ProjectWindowBackground';
 import './styles/main.scss';
-import { HashRouter as Router , Redirect, Route , Switch } from 'react-router-dom';
+import { BrowserRouter as Router , Redirect, Route , Switch } from 'react-router-dom';
 import { useEffect , useState , useReducer } from 'react';
 import OverviewPage from './components/wrappers/OverviewPage';
 import IssuesPage from './components/wrappers/IssuesPage';
@@ -70,7 +69,11 @@ function App() {
         const user_object = JSON.parse(localStorage.getItem('user')); 
         if(token && user_object._id){
           dispatch_load_object(['load','Loading User']);
-          const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user?id=' + user_object._id);
+          const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user?id=' + user_object._id , {
+            headers : {
+              'Authorization' : 'Bearer ' + localStorage.getItem('token')
+            }
+          });
           if(response.ok){
             set_user_found(user_object);
           }
