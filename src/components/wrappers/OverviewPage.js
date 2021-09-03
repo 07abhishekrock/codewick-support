@@ -23,11 +23,10 @@ const OverviewPage = () => {
     },
     (data)=>{
         const project_data = data.data.data;
-        console.log(project_data);
         set_project_data(project_data);
         set_issues_count({
-            features : {total : project_data.totalFeature , closed : project_data.closedFeatures || 0},
-            bugs : {total : project_data.totalBug , closed : project_data.closedBug || 0}
+            features : {total : project_data.totalFeature || 0 , closed : project_data.closedFeatures || 0},
+            bugs : {total : project_data.totalBug || 0 , closed : project_data.closedBug || 0}
         })
         set_members({
             users : project_data.user || [],

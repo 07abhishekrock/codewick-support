@@ -37,8 +37,11 @@ const projectOptions = [
 
 const useUrlEndpoint = ()=>{
     const url_object = useLocation();
-    const found_endpoint = projectOptions.filter(option => option.to == url_object.pathname.split('/')[3])
-    return found_endpoint.length > 0 && found_endpoint[0];
+    if(url_object.pathname.split('/').includes('project')){
+        const found_endpoint = projectOptions.filter(option => option.to == url_object.pathname.split('/')[3])
+        return found_endpoint[0];
+    }
+    return false; 
 }
 
 const ProjectWindowWithBackground = (props)=>{
@@ -56,7 +59,7 @@ const ProjectWindowWithBackground = (props)=>{
                             {
                                 projectOptions.map((projectOption , index)=>{
                                     if(convertedToUrl.label !== projectOption.label){
-                                        return <Link to={projectOption.to} onClick={set_collapsed.bind(null , false)} key={index}>{projectOption.label}<FontAwesomeIcon icon={faArrowUp}/></Link>
+                                        return <Link to={'/project/' + project_name + '/' +  projectOption.to} onClick={set_collapsed.bind(null , false)} key={index}>{projectOption.label}<FontAwesomeIcon icon={faArrowUp}/></Link>
                                     }
                                 })
                             }

@@ -127,6 +127,23 @@ form.edit-issue-form{
     }
 }
 
+a.special-link{
+    background-color:variables.$primary_color;
+    color:white;
+    padding:0.3em 1em;
+    font-weight:bold;
+    display: block;
+    width:fit-content;
+    text-decoration: none;
+    border-radius:0.2em;
+    margin-top:2em;
+    margin-bottom:1em;
+    &>svg{
+        font-size:0.9em;
+        margin-left:0.5em;
+    }
+}
+
 div.input-group{
     font-size:1em;
     display:flex;

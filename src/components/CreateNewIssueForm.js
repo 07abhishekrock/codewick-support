@@ -9,6 +9,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
     const [, dispatch_load_object] = useContext(LoadingContext);
     const current_project_id = (projects_array[0] && projects_array[0].id) || null;
     const [all_members , set_all_members] = useState([]);
+    const user_object = JSON.parse(localStorage.getItem('user'));
     useFetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project_id , 'GET' , true , {} , 
         ()=>{
             dispatch_load_object(['load', 'Loading Options']);
@@ -33,7 +34,8 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
             priority : 'normal',
             assignee : '',
             reviewer : '',
-            createdBy : JSON.parse(localStorage.getItem('user'))._id
+            createdBy : user_object._id,
+            status : 'new'
         },
         validationSchema : yup.object({
             project : yup.string().required(),
@@ -41,8 +43,6 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
             description : yup.string().required(),
             tracker : yup.string().oneOf(['feature', 'bug']),
             priority : yup.string().oneOf(['normal' , 'high']),
-            assignee : yup.string().required().notOneOf(['None'] , 'Please Select An Option'),
-            reviewer : yup.string().required().notOneOf(['None'] , 'Please Select An Option')
         }),
         onSubmit : async (values)=>{
             try{
@@ -109,24 +109,28 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                             <option value="high">Urgent</option>
                         </select>
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="issue-assignee">Issue Assignee</label>
-                        <select id="issue-assignee" {...create_issue_form.getFieldProps('assignee')}>
-                            <option value="None">Select An Option</option>
-                            {all_members.map((member)=>{
-                                return <option value={member._id} key={member._id}>{member.name}</option>
-                            })}
-                        </select>
-                    </div>
-                    <div className="input-group">
-                        <label htmlFor="issue-reviewer">Issue Reviewer</label>
-                        <select id="issue-reviewer" {...create_issue_form.getFieldProps('reviewer')}>
-                            <option value="None">Select An Option</option>
-                            {all_members.map((member)=>{
-                                return <option value={member._id} key={member._id}>{member.name}</option>
-                            })}
-                        </select>
-                    </div>
+
+
+                    {user_object.role === 'customer' ? null : <>
+                        <div className="input-group">
+                            <label htmlFor="issue-assignee">Issue Assignee</label>
+                            <select id="issue-assignee" {...create_issue_form.getFieldProps('assignee')}>
+                                <option value="None">Select An Option</option>
+                                {all_members.map((member)=>{
+                                    if(member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
+                                })}
+                            </select>
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="issue-reviewer">Issue Reviewer</label>
+                            <select id="issue-reviewer" {...create_issue_form.getFieldProps('reviewer')}>
+                                <option value="None">Select An Option</option>
+                                {all_members.map((member)=>{
+                                    if(member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
+                                })}
+                            </select>
+                        </div>
+                    </>}
                     <div className="btn-group">
                         <button type="submit">Add New Issue</button>
                         <button style={{background:"red"}} onClick={()=>{

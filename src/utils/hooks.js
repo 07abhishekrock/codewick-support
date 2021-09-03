@@ -4,15 +4,14 @@ export const useFetch = (url , method , isSecure , headers , pre_request_callbac
     const [response , set_response] = useState(null);
     useEffect(async ()=>{
         try{
-            console.log(blockingParamValue , url);
             if(!blockingParamValue) return;
-            console.log('request went through');
             pre_request_callback();
             const obtained_response = await fetch(url  , {
                 method, 
+                cache : 'no-cache',
                 headers : {
                     'Authorization' : "Bearer " + localStorage.getItem('token'),
-                    ...headers
+                    ...headers,
                 },
             });
             if(obtained_response.ok){

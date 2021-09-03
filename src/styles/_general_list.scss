@@ -244,6 +244,32 @@ div.issue-list-item{
     border-radius:0.5em;
     border:1px solid #eaeaea;
     padding:1em;
+    &.small{
+        text-align:center;
+        &>div.issue-item-heading{
+            flex-flow:column;     
+            &>div.left-wrapper{
+                margin-bottom:1em;
+            }
+            margin-bottom:1em;
+        }
+        &>p{
+            width:100%;
+            @media only screen and (max-width:550px){
+                font-size:1.2em; 
+            }
+        }
+        &>div.issue-bottom-wrapper{
+            flex-flow:column-reverse;
+            align-items:center;
+            margin-top:1.5em;
+            &>div.issue-item-footer-info{
+                margin-top:1.5em;
+            }
+        }
+    }
+
+
 
     @media only screen and (max-width:720px) {
         text-align:center;

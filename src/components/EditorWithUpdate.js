@@ -12,7 +12,9 @@ const EditorWithUpdate = ({updateFunction , deleteFunction , note_obj , btnText 
         },
         onSubmit : async (values)=>{
             await updateFunction(values);   
-            editor_form.setFieldValue('notes','');
+            if(!deleteFunction){
+                editor_form.setFieldValue('notes','');
+            }
         },
         validate:()=>{
             let errors = {};
@@ -41,11 +43,10 @@ const EditorWithUpdate = ({updateFunction , deleteFunction , note_obj , btnText 
             <div className="btn-group">
             {editor_form.errors.notes ? <i className="error">{editor_form.errors.notes}</i>
             :<button className="update-btn">{btnText || 'Update'}</button>}
-            <button className="update-btn" onClick={(e)=>{
+            {deleteFunction ? <button className="update-btn" onClick={(e)=>{
                 e.preventDefault();
-                console.log(editor_form.values);
                 deleteFunction(editor_form.values._id);
-            }}>Delete</button>
+            }}>Delete</button> : null}
             </div>
         </form>
     )

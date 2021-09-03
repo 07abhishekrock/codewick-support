@@ -1,4 +1,4 @@
-import { faClock, faPenAlt } from "@fortawesome/free-solid-svg-icons"
+import { faBoxOpen, faClock } from "@fortawesome/free-solid-svg-icons"
 import { faTrashAlt as faTrash } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import GeneralList from "./GeneralList"
@@ -71,11 +71,12 @@ export const TimeLogSingle = ({
 }
 
 
-const TimeLogsWrapper = (props)=>{
+const TimeLogsWrapper = ({issue_id})=>{
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const [time_logs_data , set_time_logs_data] = useState([]);
     const current_user_role = JSON.parse(localStorage.getItem('user')).role;
-    useFetch('https://api-redmine.herokuapp.com/api/v1/log','GET',true,{},
+    const [current_page , set_current_page] = useState(1);
+    useFetch(`https://api-redmine.herokuapp.com/api/v1/log?page=${current_page}&limit=10&issue=` + issue_id,'GET',true,{},
     ()=>{
         dispatch_load_obj(['load','Loading Time Entries']); 
     }, 
@@ -89,18 +90,36 @@ const TimeLogsWrapper = (props)=>{
             error,
             onRetry : ()=>{}
         }])
-    } 
+    },
+    issue_id || null 
     )
     return (
-        <GeneralList no_search_bar heading={"Time Logs"}>
+        <GeneralList no_search_bar heading={"Time Logs"} noFilter onNext={()=>{
+            if(time_logs_data.length === 10){
+                set_current_page(current_page + 1);
+            }
+        }} onPrev={()=>{
+            if(current_page > 0){
+                set_current_page(current_page - 1); 
+            }
+        }}>
             {time_logs_data.map((time_log)=>{
                return <TimeLogSingle key={time_log.id} {...time_log} deleteLog={(id)=>{
                 set_time_logs_data(time_logs_data.filter(time_log => time_log.id !== id));
                }} isDeletable={current_user_role === 'admin' ? true : false}/>
             })}
+            {time_logs_data.length === 0 ? <EmptyLogElement/> : null}
         </GeneralList>
     )
 }
 
+const EmptyLogElement = ()=>{
+    return <div className="time-log-single" style={{textAlign : 'center' , display:'block'}}>
+        <h1 style={{fontSize : "3.2em" , margin:'0px'}}>
+            <FontAwesomeIcon icon={faBoxOpen}/>
+        </h1>
+        <h1>No More Logs Found</h1>
+    </div>
+}
 
 export default TimeLogsWrapper;

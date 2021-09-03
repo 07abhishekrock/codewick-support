@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useFormik } from "formik";
 import { useHistory } from "react-router";
 import * as yup from 'yup';
@@ -15,21 +14,30 @@ const LoginContainer = ({set_user_found})=>{
         }),
         validateOnBlur : false,
         validateOnChange : false,
-        onSubmit : async ()=>{
+        onSubmit : async (values)=>{
+            console.log(values);
             try{
-                const response = await axios.post('https://api-redmine.herokuapp.com/api/v1/user/login',login_form.values);
-                const user_data = response.data && response.data.data.user;
-                localStorage.setItem('token',response.data.token);
-                localStorage.setItem('user',JSON.stringify(user_data));
+                const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user/login',
+                {
+                    method : 'POST',
+                    body : JSON.stringify(values),
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    }
+                });
+                if(response.ok){
+                    const user_data = await response.json();
+                    localStorage.setItem('token',user_data.token);
+                    localStorage.setItem('user',JSON.stringify(user_data.data.user));
+                    set_user_found(user_data.data.user);
+                }
+                else if(response.status == 401){
+                    alert('Invalid email or password');
+                }
                 console.log('success');
-                set_user_found(user_data);
             }
             catch(error){
-                if(error.response.status == 401){
-                    alert('invalid email or password');
-                    return;
-                }
-                alert('try again later , seems like a problem with the server');
+                alert(error.message);
             }
         }
     })

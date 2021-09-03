@@ -2,7 +2,6 @@ import { faBug, faExchangeAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const ProjectIssueTracker = ({features , bugs})=>{
-    console.log(features , bugs);
     return (
         <div className="project-issue-tracker">
             <div className="issue-wrapper features">

@@ -8,12 +8,12 @@ const ProjectMembers = ({members})=>{
             <h2>Members</h2>
             <div className="members-list managers">
                 {members.managers.map((manager)=>{
-                    return <a><FontAwesomeIcon icon={faCrown}/>{manager.name}</a>
+                    return <a key={manager._id}><FontAwesomeIcon icon={faCrown}/>{manager.name}</a>
                 })}
             </div>
             <div className="members-list developers">
                 {members.users.map((user)=>{
-                    return <a><FontAwesomeIcon icon={faTerminal}/>{user.name}</a>
+                    return <a key={user._id}><FontAwesomeIcon icon={faTerminal}/>{user.name}</a>
                 })}
             </div>
         </div>

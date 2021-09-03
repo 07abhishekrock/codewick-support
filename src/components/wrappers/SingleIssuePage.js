@@ -9,8 +9,19 @@ import { useFetch } from "../../utils/hooks"
 import { LoadingContext } from "../../utils/contexts"
 import EditorWithUpdate from "../EditorWithUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import CreateTimeLogForm from "../CreateTimeLogForm";
+import { Link } from "react-router-dom";
+
+const getDateStringForInputBox = (date)=>{
+    try{
+        const date_obj = new Date(date);
+        return date_obj.toISOString().substr(0, 10);
+    }
+    catch(e){
+        return '';
+    }
+}
 
 const EditIssueSection = ({issue_data, set_issue_data})=>{
 
@@ -23,8 +34,8 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             description : 'this is a null description',
             status : 'new',
             priority : 'normal',
-            assignee  : {name : 'Alok Puri' , _id : '' , role : 'admin'},
-            reviewer : {name : 'Alain Fernandes' , _id : '', role : 'admin'},
+            assignee  : {name : '' , _id : '' , role : 'admin'},
+            reviewer : {name : '' , _id : '', role : 'admin'},
             targetVersion : '001-Sprint',
             startDate : '',
             dueDate : '',
@@ -64,7 +75,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
         dispatch_load_obj(['idle']);
         const new_issue_data = {...form_data.initialValues , ...data.data.data};
         set_issue_data(new_issue_data);
-        console.log(new_issue_data);
         form_data.setValues(new_issue_data);
     }, 
     (error)=>{
@@ -124,7 +134,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     <label>Assignee</label>
                     <select {...form_data.getFieldProps('assignee')} value={form_data.values.assignee._id}>
                         {form_data.values.project.user.map((user)=>{
-                            return <option value={user._id} key={user._id}>{user.name}</option>
+                            if(user.role !== 'customer') return <option value={user._id} key={user._id}>{user.name}</option>
                         })}
                     </select>
                 </div>
@@ -132,7 +142,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     <label>Reviewer</label>
                     <select {...form_data.getFieldProps('reviewer')} value={form_data.values.reviewer._id}>
                         {form_data.values.project.user.map((user)=>{
-                            return <option value={user._id} key={user._id}>{user.name}</option>
+                            if(user.role !== 'customer') return <option value={user._id} key={user._id}>{user.name}</option>
                         })}
                     </select>
                 </div>
@@ -142,16 +152,17 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Start Date</label>
-                    <input type="date" {...form_data.getFieldProps('startDate')}/>
+                    <input type="date" {...form_data.getFieldProps('startDate')} value={getDateStringForInputBox(form_data.values.startDate)}/>
                 </div>
                 <div className="input-group">
                     <label>Due Date</label>
-                    <input type="date" {...form_data.getFieldProps('dueDate')}/>
+                    <input type="date" {...form_data.getFieldProps('dueDate')} value={getDateStringForInputBox(form_data.values.dueDate)}/>
                 </div>
                 <div className="input-group">
                     <label>% Done</label>
                     <input type="number" {...form_data.getFieldProps('percentageDone')}/>
                 </div>
+                <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
                 <code style={{width:'100%'}}>
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>

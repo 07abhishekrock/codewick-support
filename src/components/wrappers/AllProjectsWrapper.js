@@ -19,13 +19,8 @@ function SingleProject({
 function AllProjectsWrapper() {
     const user_id = JSON.parse(localStorage.getItem('user'))._id;
     const [all_projects , set_all_projects] = useState([]);
-    const [{
-        loading, 
-        loadingText,
-        error,
-        retryCallback
-    }, dispatch_load_object] = useContext(LoadingContext); 
-    const data = useFetch(`https://api-redmine.herokuapp.com/api/v1/project?user=${user_id}`,'GET',true,{},
+    const [,dispatch_load_object] = useContext(LoadingContext); 
+    useFetch(`https://api-redmine.herokuapp.com/api/v1/project?user=${user_id}`,'GET',true,{},
     ()=>{
         dispatch_load_object(['load',"Loading All Projects"]);
     }
@@ -36,12 +31,12 @@ function AllProjectsWrapper() {
     },
     (error)=>{
         console.log('error occurred')
-        dispatch_load_object('error' , {
+        dispatch_load_object(['error' , {
             error,
             onRetry : ()=>{
                 console.log('can retry now');
             }
-        })
+        }])
     });
     return (
         <div className="all-projects-grid">
