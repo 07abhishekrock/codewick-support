@@ -11,8 +11,12 @@ const QuillEditor = (props)=>{
         quill.on('text-change',()=>{
             props.onChange(quill_ref.current.children[0].innerHTML);
         })
-        quill_ref.current.children[0].innerHTML = props.initialValue;
     }, [])
+    useEffect(()=>{
+        quill_ref.current.children[0].innerHTML = props.initialValue;
+        console.log(props.initialValue);
+    },[props.initialValue])
+
     return (
         <>
         <div className="quill-editor" ref={quill_ref}></div>

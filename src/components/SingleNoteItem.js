@@ -1,14 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCrown , faTerminal } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useEffect , useRef } from "react";
 
+
+
+
 export const sampleNoteItem = {
-    editor : {
+    user : {
         name : 'Alok Puri',
-        role : 'Manager',
+        id : '12',
+        role : 'admin',
     },
     dateUpdated : "3 Days Ago",
-    noteMarkup : `
+    notes : `
         <ul>
             <li>First item</li> 
             <li>Second item</li> 
@@ -19,22 +23,23 @@ export const sampleNoteItem = {
 };
 
 
-const SingleNoteItem = ({editor : {name , role} , dateUpdated , noteMarkup})=>{
+const SingleNoteItem = ({user , updatedAt , notes , children ,isEditable })=>{
     const data_ref = useRef(null);
     useEffect(() => {
-        data_ref.current.innerHTML = noteMarkup;
+        if(!isEditable){
+            data_ref.current.innerHTML = notes;
+        }
     }, [])
     return <div className="single-note-item-wrapper">
         <div className="single-note-item-profile">
-            {role === "Manager" ? <i manager="1">
-                <FontAwesomeIcon icon={faCrown}/>
-            </i> : <i developer="1">
-                <FontAwesomeIcon icon={faTerminal}/>     
-            </i>}
-            <span>{name}</span>
-            <span>{dateUpdated}</span>
+            <i>
+                <FontAwesomeIcon icon={faUser}/>     
+            </i>
+            <span>{user && user.name || "no name"}</span>
+            <span>{(new Date(updatedAt)).toDateString()}</span>
         </div>
-        <div className="single-note-item-data" ref={data_ref}>
+        <div className="single-note-item-data" ref={data_ref} noborder={isEditable ? "1" : "0"}>
+            {children}
         </div>
     </div>
 }

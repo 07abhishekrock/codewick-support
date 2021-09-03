@@ -1,7 +1,7 @@
 import { faBug, faExchangeAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-const ProjectIssueTracker = ()=>{
+const ProjectIssueTracker = ({features , bugs})=>{
     return (
         <div className="project-issue-tracker">
             <div className="issue-wrapper features">
@@ -11,13 +11,13 @@ const ProjectIssueTracker = ()=>{
                 </h3>
                 <div className="issue-numbers-grid">
                     <div className="issue-numbers">
-                        42<i>OPEN</i>
+                        {features.total - features.closed}<i>OPEN</i>
                     </div>
                     <div className="issue-numbers">
-                        12<i>CLOSED</i>
+                        {features.closed}<i>CLOSED</i>
                     </div>
                     <div className="issue-numbers features">
-                        54<i>TOTAL</i>
+                        {features.total}<i>TOTAL</i>
                     </div>
                 </div>
             </div>
@@ -28,13 +28,13 @@ const ProjectIssueTracker = ()=>{
                 </h3>
                 <div className="issue-numbers-grid">
                     <div className="issue-numbers">
-                        12<i>OPEN</i>
+                        {bugs.total - bugs.closed}<i>OPEN</i>
                     </div>
                     <div className="issue-numbers">
-                        22<i>CLOSED</i>
+                        {bugs.closed}<i>CLOSED</i>
                     </div>
                     <div className="issue-numbers">
-                        34<i>TOTAL</i>
+                        {bugs.total}<i>TOTAL</i>
                     </div>
                 </div>
             </div>

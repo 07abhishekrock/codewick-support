@@ -1,0 +1,60 @@
+@use './variables' as variables;
+form.user-profile-page{
+    width:500px;
+    max-width:90%;
+    margin:3em auto;
+    margin-bottom:4em;
+    &>button{
+        font-size:1em;
+        display:block;
+        background-color:black;
+        margin-left:auto;
+        color:white;
+        padding:0.3em 0.5em;
+        border-radius:0.3em;
+        border:0px;
+    }
+    &>div.user-profile-image{
+        margin-bottom:3em;
+        &>img{
+            display:block;
+            margin:0 auto;
+            width:100px;
+            height:100px;
+            border-radius:50%;
+        }
+        &>input[type="file"]{
+            display:none;
+        }
+    }
+    &>div.user-profile-input-group{
+        font-size:1.2em;
+        font-weight:550;
+        margin:0 auto;
+        margin-bottom:1em;
+        display:flex;
+        align-items:center;
+        @media only screen and (max-width:600px){
+            display:block;
+        }
+        &>label{
+            display:block;
+            font-weight:bold;
+            margin-right:1em;
+            flex-shrink:0;
+        }
+        &>input{
+            flex-grow:1;
+            border-radius:0.3em;
+            font-family:inherit;
+            padding:0.3em 0.5em;
+            font-size:1em;
+            outline:none;
+            width:100%;
+            border:2px solid lightgray;
+            &:focus{
+                border:2px solid black;
+            }
+        }
+    }
+}

@@ -1,50 +1,52 @@
 import { faCalendarWeek, faPenNib } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Link } from "react-router-dom"
 import { returnStatusFromCode } from "./IssueContainer"
 
 
 const IssueListItem = ({
-    id,
+    counter,
     tracker,
     priority,
-    subject, 
-    Assignee,
-    Reviewer,
-    last_updated_date,
-    progress
+    title, 
+    assignee,
+    reviewer,
+    updatedAt,
+    status,
+    _id,
 })=>{
     return (
         <div className="issue-list-item">
             <div className="issue-item-heading">
                 <div className="left-wrapper">
-                    <input type="checkbox" name={id+'-selected'} id={"issue#".concat(id)}/>
-                    <label htmlFor={"issue#".concat(id)}></label>
-                    <span id="issue-item-id">#{id}</span>
+                    <input type="checkbox" name={counter+'-selected'} id={"issue#".concat(counter)}/>
+                    <label htmlFor={"issue#".concat(counter)}></label>
+                    <span id="issue-item-id">#{counter}</span>
                     <i className="circle-seperator"></i>
-                    <span id="issue-item-tracker" tracker_type={tracker}>
-                        {tracker == "0" ? "Feature" : "Bug"}
+                    <span id="issue-item-tracker" tracker_type={tracker === "feature" ? "0" : "1"}>
+                        {tracker == "feature" ? "Feature" : "Bug"}
                     </span>
                     <i className="circle-seperator"></i>
-                    <span id="issue-item-priority" priority_type={priority}>
-                        {priority == "0" ? "Normal" : "Urgent"}
+                    <span id="issue-item-priority" priority_type={priority === "high" ? "1" : "0"}>
+                        {priority == "normal" ? "Normal" : "Urgent"}
                     </span>
                 </div>
-                <span id="issue-item-progress" status_type={progress}>
-                    {returnStatusFromCode(progress)}
+                <span id="issue-item-progress" status_type={returnStatusFromCode(status)}>
+                    {status || "New"}
                 </span>
             </div>
-            <p>{subject}</p> 
+            <p>{title}</p> 
             <div className="issue-bottom-wrapper">
                 <div className="issue-item-footer-info">
                     <div className="issue-item-users">
-                        <span>Assignee : <a>{Assignee || 'N/A'}</a></span>
-                        <span>Reviewer : <a>{Reviewer || 'N/A'}</a></span>
+                        <span>Assignee : <a>{assignee && assignee.name || 'N/A'}</a></span>
+                        <span>Reviewer : <a>{reviewer && reviewer.name || 'N/A'}</a></span>
                     </div>
-                    <span><FontAwesomeIcon icon={faCalendarWeek}/>&nbsp;Last Updated On {last_updated_date}</span>
+                    <span><FontAwesomeIcon icon={faCalendarWeek}/>&nbsp;Last Updated On {(new Date(updatedAt)).toLocaleDateString('en-GB')}</span>
                 </div>
                 <div className="issue-item-options">
-                    <a><FontAwesomeIcon icon={faPenNib}/>Edit Issue</a>
-                    <a>View Issue</a>
+                    <Link to={`../../issues/${_id}`}><FontAwesomeIcon icon={faPenNib}/>Edit Issue</Link>
+                    <a>4:00 Hrs</a>
                 </div>
             </div>
         </div>

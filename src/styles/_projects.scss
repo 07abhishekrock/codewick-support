@@ -17,7 +17,7 @@ div.project-background{
     }
     &>div.project-options-wrapper{
         position:absolute;
-        z-index:100;
+        z-index:90;
         right:1em;
         top:1em;
         &>span{
@@ -60,7 +60,10 @@ div.project-background{
     }
     &>div.project-container{
         position:relative;
-        z-index:1;
+        &>*{
+            position:relative;
+            z-index:1;
+        }
         &>div.project-heading{
             padding:1em;
             text-align:center;
@@ -80,6 +83,12 @@ div.project-background{
                 margin-top:0.2em;
                 display:block;
                 font-size:1.2em;
+            }
+            &>button{
+                font-size:1em;
+                margin-top:0.5em;
+                padding:0.3em 0.5em;
+                font-family:inherit;
             }
         }
         &>div.project-overview-grid{
@@ -286,6 +295,43 @@ div.buttons-grp{
         background-color:transparent;
         &:not(:last-child){
             margin-right:0.5em;
+        }
+    }
+}
+
+
+
+
+
+
+div.all-projects-grid{
+    display:grid;
+    margin-top:2em;
+    grid-template-columns: repeat(4 , 1fr);
+    padding:2em;
+    grid-gap:1em 2em;
+    @media only screen and (max-width:1200px){
+        grid-template-columns: repeat(3 , 1fr);
+    }
+    @media only screen and (max-width:900px){
+        grid-template-columns: repeat(2 , 1fr);
+    }
+    @media only screen and (max-width:600px){
+        grid-template-columns: 1fr;
+    }
+    &>a{
+        text-decoration:none;
+        background-color : white;
+        color:black;
+        border-radius:0.5em;
+        box-shadow: 0px 0px 25px 5px rgba(0,0,0,0.1);
+        padding:1em;
+        &>h2{
+            margin:0px;
+            margin-bottom:0.5em;
+        }
+        &:hover{
+            color:variables.$dark_primary_color;
         }
     }
 }

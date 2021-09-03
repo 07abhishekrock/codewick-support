@@ -1,0 +1,172 @@
+@use './variables' as variables;
+div.admin-page-wrapper{
+    margin-top:3em;
+
+    &>div.admin-page-modal-wrapper{
+        max-width:700px;
+        width:95%;
+        margin: 0 auto;
+        background-color:white;
+        margin-top:3em;
+        padding:1em 1.5em;
+        border-radius:0.3em;
+        box-shadow:0px 0px 25px 5px rgba(0,0,0,0.06);
+
+    }
+
+    &>div.admin-page-buttons{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content: center;
+        max-width:700px;
+        width:90%;
+        margin:0 auto;
+        grid-gap:1em;
+        &>span{
+            color:white;
+            padding:0.5em 1em;
+            text-align:center;
+            cursor:pointer;
+            border:3px solid currentColor;
+            font-size:1.1em;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            border-radius:0.2em;
+            box-shadow:0px 0px 25px 5px rgba(0,0,0,0.06);
+            &[select="1"]{
+                color:variables.$primary_color;
+                background-color:white;
+            }
+        }
+    }
+
+}
+
+form.modal-form{
+    &>h3{
+        text-align:center;
+        margin-top:0.2em;
+        margin-bottom:1em;
+        font-size:1.3em;
+    }
+    &>ul.error-container{
+        display:block;
+        color:red;
+        list-style:none;
+        padding-bottom:0.5em;
+        margin-bottom:1em;
+        padding-left:0px;
+        &>li{
+            display:block;
+            margin-bottom:0.5em;
+            font-size:0.8em;
+            font-style:normal;
+        }
+    }
+    &>div.input-group{
+        &.single-column>label{
+            margin-bottom:0.5em;
+        }
+        &>input , &>textarea{
+            width:100%;
+            resize:none;
+            display:block;
+        }
+        &>div.search-bar-with-list{
+            &>div.inner-search-bar{
+                padding:0.1em 0.5em;
+                border-radius:0.3em;
+                display:flex;
+                align-items:center;
+                border:2px solid lightgray;
+                &:focus-within{
+                    color:black;
+                    &>svg{
+                        color:black;
+                    }
+                    &>input{
+                        color:black;
+                    }
+                    border:2px solid black;
+                }
+                &>svg{
+                    margin-right:0.5em;
+                    flex-shrink:0;
+                    color:gray;
+                }
+                &>input{
+                    flex-grow:1;
+                    font-size:inherit;
+                    font-family:inherit;
+                    padding:0.5em;
+                    border:0px solid currentColor;
+                    outline:none;
+                    &:focus{
+                        border:0px;
+                    }
+                }
+                margin-bottom:0.7em;
+            }
+            &>div.search-list{
+                padding:1em;
+                border:2px solid lightgray;
+                border-radius:0.3em;
+                min-height:150px;
+                &>div.search-list-item{
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    font-size:1.1em;
+                    &>span{
+                        padding:0.3em 0.5em;
+                        font-size:0.8em;
+                        font-weight:550;
+                        border:2px solid black;
+                        border-radius:0.3em;
+                        cursor:pointer;
+                    }
+                    margin-bottom:0.8em;
+                    &:last-child{
+                        margin-bottom:0px;
+                    }
+                }
+
+            }
+        }
+        margin-bottom:2em;
+        &>div.selected-items{
+            display:flex;
+            flex-wrap:wrap;
+            &>span{
+                padding:0.2em 0.5em;
+                font-size:0.9em;
+                display:block;
+                border:2px solid black;
+                border-radius:0.2em;
+            }
+        }
+    }
+    &>div.btn-group{
+        display:flex;
+        gap:1em;
+        & button{
+            flex-grow:1;
+            padding:0.8em;
+            font-size:1.1em;
+            font-weight:bold;
+            border:0px solid black;
+            background-color:variables.$primary_color;
+            border-radius:0.3em;
+            color:white;
+            width:100%;
+        }
+        @media only screen and (max-width:500px){
+            flex-wrap:wrap;
+            & button{
+                flex-shrink:0;
+            }
+        }
+    }
+}
