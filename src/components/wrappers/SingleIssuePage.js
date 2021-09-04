@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import CreateTimeLogForm from "../CreateTimeLogForm";
 import { Link } from "react-router-dom";
+import { logged_out_dialog } from "../../utils/functions";
 
 const getDateStringForInputBox = (date)=>{
     try{
@@ -36,9 +37,9 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             priority : 'normal',
             assignee  : {name : '' , _id : '' , role : 'admin'},
             reviewer : {name : '' , _id : '', role : 'admin'},
-            targetVersion : '001-Sprint',
+            version : 'sprint',
             startDate : '',
-            dueDate : '',
+            endDate : '',
             percentageDone : 0,
         },
         onSubmit : async (values)=>{
@@ -47,7 +48,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , {
                     method : 'PATCH',
                     body : JSON.stringify({...values , assignee : values.assignee === 'None' ? null : values.assignee , 
-                    reviewer : values.reviewer === 'None' || values.reviewer}),
+                    reviewer : values.reviewer === 'None' ? null : values.reviewer}),
                     headers : {
                         "Content-Type" : 'application/json',
                         "Authorization" : "Bearer " + localStorage.getItem('token')
@@ -57,7 +58,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     dispatch_load_obj(['info', 'Issue Updated Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                    await logged_out_dialog(dispatch_load_obj , response);
                 }
             }
             catch(e){
@@ -154,7 +155,10 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Target Version</label>
-                    <input type="text" {...form_data.getFieldProps('targetVersion')}/>
+                    <select {...form_data.getFieldProps('version')}>
+                        <option value="sprint">Sprint</option>
+                        <option value="backlog">Backlog</option>
+                    </select>
                 </div>
                 <div className="input-group">
                     <label>Start Date</label>
@@ -162,7 +166,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Due Date</label>
-                    <input type="date" {...form_data.getFieldProps('dueDate')} value={getDateStringForInputBox(form_data.values.dueDate)}/>
+                    <input type="date" {...form_data.getFieldProps('endDate')} value={getDateStringForInputBox(form_data.values.endDate)}/>
                 </div>
                 <div className="input-group">
                     <label>% Done</label>
@@ -201,25 +205,16 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
 //     </span>
 // }
 
-const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
+const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
     const [,dispatch_load_object] = useContext(LoadingContext);
-    const all_selections = [
-        {
-            index : 0,
-            label : 'Notes'
-        } , 
-        {
-            index : 1,
-            label : 'Feedback'
-        } , 
-    ];
+
     const upsertList = async (new_note)=>{
         try{
             let isFound = notes.filter(note => note._id === new_note._id);
             let response;
             if(isFound.length === 0){
                 //call update api
-                dispatch_load_object(['load','Updating Note']);
+                dispatch_load_object(['load','Inserting Note']);
                 response = await fetch('https://api-redmine.herokuapp.com/api/v1/notes' , {
                     method : 'POST',
                     headers : {
@@ -229,15 +224,20 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
                     body : JSON.stringify({...new_note, issue : issue_id})
                 })
                 if(response.ok){
-                    dispatch_load_object(['info','Updated Notes Succesfully']);
-                    set_notes([...notes , new_note]);
+                    const note_data = await response.json();
+                    dispatch_load_object(['info','Inserted Notes Succesfully']);
+                    set_notes([...notes , {...new_note , _id : note_data.data.data._id}]);
                     return;
+                }
+                else{
+                    await logged_out_dialog(dispatch_load_object , response);
                 }
             }
             else{
                 //call insert api
                 //update current list
-                dispatch_load_object(['load' , 'Inserting New Note']);
+                dispatch_load_object(['load' , 'Updating Note']);
+                console.log(new_note);
                 response = await fetch('https://api-redmine.herokuapp.com/api/v1/notes/'+new_note._id , {
                     method : 'PATCH',
                     headers : {
@@ -247,11 +247,13 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
                     body : JSON.stringify({ ...new_note})
                 })
                 if(response.ok){
-                    dispatch_load_object(['info','Inserted Notes Succesfully']);
+                    dispatch_load_object(['info','Updated Notes Succesfully']);
                     return;
                 }
+                else{
+                    await logged_out_dialog(dispatch_load_object , response);
+                }
             }
-            dispatch_load_object(['info','Some Error Occurred']);
         }
         catch(e){
             dispatch_load_object(['info','Some Error Occurred']);
@@ -271,7 +273,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
                 set_notes(notes.filter(note=>note._id !== note_id));
             }
             else{
-                dispatch_load_object(['info','Some Error Occurred']);
+                await logged_out_dialog(dispatch_load_object , response);
             }
         }
         catch(e){
@@ -284,7 +286,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
         updatedAt : new Date(),
         user : current_user_obj
     }
-    const [current_selection , set_current_selection] = useState(0);
+    const [current_selection , set_current_selection] = useState(-1);
     return (
         <>
             <div className="tabs-wrapper">
@@ -321,6 +323,8 @@ const SingleIssuePage = ()=>{
     const [notes , set_notes] = useState([]);
     const [create_log , show_create_log] = useState(false);
     const [,dispatch_load_obj] = useContext(LoadingContext);
+    const [user_object] = useContext(UserContext);
+    console.log('role is' , user_object.role === 'customer');
     useFetch('https://api-redmine.herokuapp.com/api/v1/notes?issue=' + issue_data._id , 'GET' , true , {} , 
     ()=>{
         dispatch_load_obj(['load','Loading Notes'])
@@ -336,8 +340,30 @@ const SingleIssuePage = ()=>{
             onRetry : ()=>{}
         }])
     },
-    issue_data._id || null
-    );
+    !(issue_data._id) || user_object.role === 'customer' ? null : true);
+
+    let all_selections = {};
+    if(user_object.role === 'customer'){
+        all_selections = [
+            {
+                index : 1,
+                label : 'Feedback'
+            } , 
+        ];
+    }
+    else{
+        all_selections = [
+            {
+                index : 0,
+                label : 'Notes'
+            } , 
+            {
+                index : 1,
+                label : 'Feedback'
+            } , 
+        ]
+    }
+
     return (
         <>
             <div className="project-heading">
@@ -365,7 +391,7 @@ const SingleIssuePage = ()=>{
                     <FancyPeekElement option="% Done" value={<ProgressBar value={issue_data.donePercentage}/>}/>
                     <FancyPeekElement option="Time Spent" value="3 Hrs"/>
                 </div> */}
-                <UpdatesWrapper notes={notes} set_notes={set_notes} issue_id={issue_data._id || null}/>
+                <UpdatesWrapper all_selections={all_selections} notes={notes} set_notes={set_notes} issue_id={issue_data._id || null}/>
             </GeneralBoxWrapper>
         </>
     )

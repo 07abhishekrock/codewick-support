@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { LoadingContext, UserContext } from '../utils/contexts';
+import { logged_out_dialog } from '../utils/functions';
 
 function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogsList}) {
     const [,dispatch_load_obj] = useContext(LoadingContext);
@@ -46,7 +47,7 @@ function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogs
                     dispatch_load_obj(['info','Time Logged Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                   await logged_out_dialog(dispatch_load_obj, response); 
                 }
             }
             catch(e){

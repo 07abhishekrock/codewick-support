@@ -4,6 +4,7 @@ import { LoadingContext , UserContext } from '../utils/contexts';
 import { useFetch } from '../utils/hooks';
 import * as yup from 'yup';
 import QuillEditor from './QuillEditor';
+import { logged_out_dialog } from '../utils/functions';
 
 function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDialog}){
     const [, dispatch_load_object] = useContext(LoadingContext);
@@ -65,21 +66,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                     dispatch_load_object(['info','Issue Added Succesfully']);
                 }
                 else{
-                    const error_obj = await response.json();
-                    if(error_obj.error.statusCode === 401){
-                        dispatch_load_object(['error' , {
-                            error : error_obj.message,
-                            buttonText : "Login Now",
-                            buttonCallback : ()=>{
-                                localStorage.removeItem('user');
-                                dispatch_load_object(['idle']);
-                                window.location.reload();
-                            },
-                            onRetry : null
-                        }])
-                        return;
-                    }
-                    dispatch_load_object(['info','Issue could not be added']);
+                    await logged_out_dialog(dispatch_load_object, response);
                 }
             }
             catch(e){

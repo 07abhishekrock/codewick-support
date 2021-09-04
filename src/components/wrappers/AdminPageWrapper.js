@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React, { useState , useRef, useContext } from 'react'
 import { LoadingContext } from '../../utils/contexts';
+import { logged_out_dialog } from '../../utils/functions';
 function CreateNewProject(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const project_form = useFormik({
@@ -27,6 +28,7 @@ function CreateNewProject(){
                     description,
                     totalFeature : 0
                 }
+                console.log(project_body);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
                     method  : 'POST',
                     body : JSON.stringify(project_body),
@@ -38,7 +40,7 @@ function CreateNewProject(){
                     dispatch_load_obj(['info','Project Added Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                    await logged_out_dialog(dispatch_load_obj , response);
                 }
             }
             catch(e){
@@ -184,10 +186,10 @@ function CreateNewUser(){
                     }
                 })
                 if(response.ok){
-                    dispatch_load_obj(['info','Added Succesfully']);
+                    dispatch_load_obj(['info','User Added Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                    await logged_out_dialog(dispatch_load_obj , response);
                 }
             }
             catch(e){

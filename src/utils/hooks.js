@@ -23,7 +23,7 @@ export const useFetch = (url , method , isSecure , headers , pre_request_callbac
             }
             else{
                 const error_obj = await obtained_response.json();
-                if(error_obj.error.statusCode === 500 || error_obj.error.statusCode === 401){
+                if(obtained_response.status === 401){
                     dispatch_load_obj(['error' , {
                         error : error_obj.message,
                         buttonText : "Login Now",

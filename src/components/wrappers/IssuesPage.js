@@ -18,6 +18,7 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
     const [view_new_issue_dialog , set_view_new_issue_dialog] = useState();
     const [all_issues , set_all_issues] = useState([]);
     const user_id = useContext(UserContext)[0]._id;
+    const [user_object] = useContext(UserContext);
 
     const [current_page , set_current_page] = useState(1);
     const [search_query , set_search_query] = useState('');
@@ -47,8 +48,9 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
         },
         project_id === undefined ? null : project_id
     ,project_id || null)
-    useFetch('https://api-redmine.herokuapp.com/api/v1/project?user='+user_id,'GET',true,{},
+    useFetch('https://api-redmine.herokuapp.com/api/v1/project/my-project/','GET',true,{},
         ()=>{
+            console.log('loading single project');
             dispatch_load_obj(['load','Adding Projects...'])
         },
         (data)=>{
@@ -62,7 +64,24 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
                 onRetry : ()=>{}
             }])
         }
-    ,createdByUserId || assignedByUserId ? null : true)
+    ,user_object.role === 'admin' || createdByUserId || assignedByUserId ? null : true)
+    useFetch('https://api-redmine.herokuapp.com/api/v1/project','GET',true,{},
+    ()=>{
+        console.log('loading all projects');
+        dispatch_load_obj(['load','Adding Projects...'])
+    },
+    (data)=>{
+        const projects_list = data.data.data;
+        set_projects(projects_list);
+        dispatch_load_obj(['idle']);
+    },
+    (error)=>{
+        dispatch_load_obj(['error',{
+            error,
+            onRetry : ()=>{}
+        }])
+    }
+    ,user_object.role !== 'admin' || createdByUserId || assignedByUserId ? null : true)
     useFetch(`https://api-redmine.herokuapp.com/api/v1/issue?${search_query}&limit=${LIMIT}&page=${current_page}&project=` + project_id , 'GET' , true , {} , 
     ()=>{
         dispatch_load_obj(['load' , 'Getting All Issues']);

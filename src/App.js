@@ -93,15 +93,15 @@ function App() {
         if(token && user._id){
           console.log('hello world');
           // dispatch_load_object(['load','Loading User']);
-          const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user?_id=' + user._id , {
+          const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user/' + user._id , {
             headers : {
               'Authorization' : 'Bearer ' + localStorage.getItem('token')
             }
           });
           if(response.ok){
             const response_object = await response.json();
-            set_user_found(response_object.data.data[0]);
-            localStorage.setItem('user',JSON.stringify(response_object.data.data[0]));
+            set_user_found(response_object.data.data);
+            localStorage.setItem('user',JSON.stringify(response_object.data.data));
           }
           else{
             set_user_found(null);
