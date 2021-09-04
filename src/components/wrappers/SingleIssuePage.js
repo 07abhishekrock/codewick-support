@@ -1,12 +1,12 @@
 import { useFormik } from "formik"
-import * as yup from 'yup';
+// import * as yup from 'yup';
 import ReactQuill from "react-quill";
 import React, { useContext, useState } from "react"
 import { GeneralBoxWrapper } from "../GeneralList"
-import SingleNoteItem, { sampleNoteItem } from "../SingleNoteItem"
+import SingleNoteItem from "../SingleNoteItem"
 import { useParams } from "react-router"
 import { useFetch } from "../../utils/hooks"
-import { LoadingContext } from "../../utils/contexts"
+import { LoadingContext, UserContext } from "../../utils/contexts"
 import EditorWithUpdate from "../EditorWithUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
@@ -46,7 +46,8 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 dispatch_load_obj(['load' , 'Updating Issue']);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , {
                     method : 'PATCH',
-                    body : JSON.stringify({...values , assignee : values.assignee._id , reviewer : values.reviewer._id}),
+                    body : JSON.stringify({...values , assignee : values.assignee === 'None' ? null : values.assignee , 
+                    reviewer : values.reviewer === 'None' || values.reviewer}),
                     headers : {
                         "Content-Type" : 'application/json',
                         "Authorization" : "Bearer " + localStorage.getItem('token')
@@ -75,7 +76,10 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
         dispatch_load_obj(['idle']);
         const new_issue_data = {...form_data.initialValues , ...data.data.data};
         set_issue_data(new_issue_data);
-        form_data.setValues(new_issue_data);
+        form_data.setValues({...new_issue_data , 
+            assignee : (new_issue_data.assignee && new_issue_data.assignee._id) || 'None' 
+            , reviewer : (new_issue_data.reviewer && new_issue_data.reviewer._id) || 'None' 
+        });
     }, 
     (error)=>{
         dispatch_load_obj(['error',{
@@ -132,16 +136,18 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Assignee</label>
-                    <select {...form_data.getFieldProps('assignee')} value={form_data.values.assignee._id}>
-                        {form_data.values.project.user.map((user)=>{
+                    <select {...form_data.getFieldProps('assignee')} value={form_data.values.assignee || 'None'}>
+                        <option value="None">Select An Option</option>
+                        {issue_data.project && issue_data.project.user.map((user)=>{
                             if(user.role !== 'customer') return <option value={user._id} key={user._id}>{user.name}</option>
                         })}
                     </select>
                 </div>
                 <div className="input-group">
                     <label>Reviewer</label>
-                    <select {...form_data.getFieldProps('reviewer')} value={form_data.values.reviewer._id}>
-                        {form_data.values.project.user.map((user)=>{
+                    <select {...form_data.getFieldProps('reviewer')} value={form_data.values.reviewer || 'None'}>
+                        <option value="None">Select An Option</option>
+                        {issue_data.project && issue_data.project.user.map((user)=>{
                             if(user.role !== 'customer') return <option value={user._id} key={user._id}>{user.name}</option>
                         })}
                     </select>
@@ -204,11 +210,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
         } , 
         {
             index : 1,
-            label : 'History'
-        } , 
-        {
-            index : 2,
-            label : 'Property Changes'
+            label : 'Feedback'
         } , 
     ];
     const upsertList = async (new_note)=>{
@@ -276,7 +278,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id})=>{
             dispatch_load_object(['info','Some Error Occurred']);
         }
     }
-    const current_user_obj = JSON.parse(localStorage.getItem('user'));
+    const [current_user_obj] = useContext(UserContext);
     const new_note_obj = {
         notes : '',
         updatedAt : new Date(),
@@ -345,10 +347,10 @@ const SingleIssuePage = ()=>{
             </div>
             {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log}/> : false}
             <GeneralBoxWrapper width={'1200px'}>
-                <h3 className="box-heading">ISSUE TITLE</h3>
+                {/* <h3 className="box-heading">ISSUE TITLE</h3>
                 <h1 className="main-heading">{issue_data.title || 'No Title Provided'}</h1>
                 <h3 className="box-heading">ISSUE DESCRIPTION</h3>
-                <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div>
+                <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div> */}
                 <EditIssueSection {...{issue_data , set_issue_data}}/>
                 {/* <h3 className="box-heading">ISSUE DETAILS</h3>
                 <div className="peek-grid">

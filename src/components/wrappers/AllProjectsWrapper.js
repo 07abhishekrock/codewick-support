@@ -1,6 +1,6 @@
 import React, { useEffect , useState , useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { LoadingContext } from '../../utils/contexts';
+import { LoadingContext, UserContext } from '../../utils/contexts';
 import {useFetch} from '../../utils/hooks';
 
 function SingleProject({
@@ -17,7 +17,7 @@ function SingleProject({
 }
 
 function AllProjectsWrapper() {
-    const user_id = JSON.parse(localStorage.getItem('user'))._id;
+    const user_id = useContext(UserContext)[0]._id;
     const [all_projects , set_all_projects] = useState([]);
     const [,dispatch_load_object] = useContext(LoadingContext); 
     useFetch(`https://api-redmine.herokuapp.com/api/v1/project?user=${user_id}`,'GET',true,{},

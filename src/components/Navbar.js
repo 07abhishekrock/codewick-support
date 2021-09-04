@@ -1,7 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch, faTimes, faUser } from "@fortawesome/free-solid-svg-icons"
-import { useEffect, useRef , useState } from "react"
+import { useContext, useEffect, useRef , useState } from "react"
 import { Link, useLocation } from "react-router-dom"
+import { UserContext } from "../utils/contexts";
 
 function includesMultiple(target_array , ...target_values){
     let contains = false;
@@ -37,7 +38,7 @@ const NavbarWithSearch = ()=>{
     },[routes_array])
 
     const search_bar_ref = useRef(null);
-    const user_object = JSON.parse(localStorage.getItem('user'));
+    const [user_object] = useContext(UserContext);
     return (
         <nav>
             <div className="user-widget" tabIndex="1">

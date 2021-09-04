@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle as faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState , useEffect } from "react";
 import { useParams } from "react-router";
-import { LoadingContext } from "../../utils/contexts";
+import { LoadingContext, UserContext } from "../../utils/contexts";
 import { useFetch } from "../../utils/hooks";
 import CreateNewIssueForm from "../CreateNewIssueForm";
 import IssuesListWrapper from "../IssuesListWrapper"
@@ -17,7 +17,7 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
     const [current_project_data , set_current_project_data] = useState();
     const [view_new_issue_dialog , set_view_new_issue_dialog] = useState();
     const [all_issues , set_all_issues] = useState([]);
-    const user_id = JSON.parse(localStorage.getItem('user'))._id;
+    const user_id = useContext(UserContext)[0]._id;
 
     const [current_page , set_current_page] = useState(1);
     const [search_query , set_search_query] = useState('');
@@ -166,7 +166,7 @@ function IssuesPage({createdByUserId , assignedByUserId}) {
             }} 
             newHeading={()=>{
                 if(createdByUserId) return "Created By You"
-                else if(assignedByUserId) return "Assigned By You"
+                else if(assignedByUserId) return "Assigned To You"
             }}
             
             />

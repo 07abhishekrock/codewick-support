@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { LoadingContext } from '../utils/contexts';
+import { LoadingContext, UserContext } from '../utils/contexts';
 
-function CreateTimeLogForm({show_create_log , issue_id , project_id}) {
+function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogsList}) {
     const [,dispatch_load_obj] = useContext(LoadingContext);
+    const [user_object] = useContext(UserContext);
     const time_log_form = useFormik({
         initialValues : {
             activity : "development",
@@ -26,7 +27,7 @@ function CreateTimeLogForm({show_create_log , issue_id , project_id}) {
                     hours : hours + Number((minutes / 60).toFixed(1)),
                     issue : issue_id , 
                     project : project_id,
-                    user : JSON.parse(localStorage.getItem('user'))?._id
+                    user : user_object._id
                 }
                 dispatch_load_obj(['load','Adding Time Log']);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/log',{
@@ -38,6 +39,10 @@ function CreateTimeLogForm({show_create_log , issue_id , project_id}) {
                     body : JSON.stringify(log_data)
                 })
                 if(response.ok){
+                    const data = await response.json();
+                    if(updateLogsList){
+                        updateLogsList(data.data.data);
+                    }
                     dispatch_load_obj(['info','Time Logged Succesfully']);
                 }
                 else{

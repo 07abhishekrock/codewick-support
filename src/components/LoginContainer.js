@@ -2,7 +2,6 @@ import { useFormik } from "formik";
 import { useHistory } from "react-router";
 import * as yup from 'yup';
 const LoginContainer = ({set_user_found})=>{
-    const history = useHistory();
     const login_form = useFormik({
         initialValues : {
             email : '',
