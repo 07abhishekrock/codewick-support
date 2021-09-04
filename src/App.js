@@ -21,7 +21,7 @@ import LoadingModal from './components/LoadingModal';
 const HomePageGrid = ({user})=>{
   return(
     <div className="homepage-grid">
-        <IssuesPage key={"assignedBy"} assignedByUserId={user && user._id}/>
+        {user && user.role !== 'customer' ? <IssuesPage key={"assignedBy"} assignedByUserId={user && user._id}/> : null}
         <IssuesPage key={"createdBy"} createdByUserId={user && user._id}/>
     </div>
   )

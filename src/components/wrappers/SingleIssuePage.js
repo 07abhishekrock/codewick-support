@@ -26,6 +26,7 @@ const getDateStringForInputBox = (date)=>{
 
 const EditIssueSection = ({issue_data, set_issue_data})=>{
 
+    const [user_object] = useContext(UserContext);
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -37,7 +38,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             priority : 'normal',
             assignee  : {name : '' , _id : '' , role : 'admin'},
             reviewer : {name : '' , _id : '', role : 'admin'},
-            version : 'sprint',
+            target : 'sprint',
             startDate : '',
             endDate : '',
             percentageDone : 0,
@@ -125,7 +126,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                         <option value="inProgress">In Progress</option>
                         <option value="codeReview">Code Review</option>
                         <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        {user_object.role === 'admin' ? <option value="closed">Closed</option> : null}
                     </select>
                 </div>
                 <div className="input-group">
@@ -155,7 +156,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Target Version</label>
-                    <select {...form_data.getFieldProps('version')}>
+                    <select {...form_data.getFieldProps('target')}>
                         <option value="sprint">Sprint</option>
                         <option value="backlog">Backlog</option>
                     </select>
@@ -170,9 +171,9 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>% Done</label>
-                    <input type="number" {...form_data.getFieldProps('percentageDone')}/>
+                    <input type="number" min="0" max="100" {...form_data.getFieldProps('percentageDone')}/>
                 </div>
-                <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
+                {user_object.role !== 'customer' ? <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link> : null}
                 <code style={{width:'100%'}}>
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>

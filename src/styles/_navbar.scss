@@ -135,6 +135,8 @@ nav{
                     margin-right:1em;
                     font-weight:700;
                     cursor:pointer;
+                    text-decoration: none;
+                    color:inherit;
                     text-transform:uppercase;
                     font-size:0.9em;
                     &[select="1"]{
