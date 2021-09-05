@@ -121,6 +121,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 </div>
                 <div className="input-group">
                     <label>Status</label>
+                    {issue_data && issue_data.status === 'closed' && user_object.role === 'admin' ?
                     <select {...form_data.getFieldProps('status')}>
                         <option value="new">New</option>
                         <option value="inProgress">In Progress</option>
@@ -128,6 +129,19 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                         <option value="resolved">Resolved</option>
                         {user_object.role === 'admin' ? <option value="closed">Closed</option> : null}
                     </select>
+                    :null}
+                    {issue_data && issue_data.status === 'closed' && user_object.role !== 'admin' ? 
+                    <span>Closed</span> : null
+                    }
+                    {issue_data && issue_data.status !== 'closed' ? 
+                     <select {...form_data.getFieldProps('status')}>
+                        <option value="new">New</option>
+                        <option value="inProgress">In Progress</option>
+                        <option value="codeReview">Code Review</option>
+                        <option value="resolved">Resolved</option>
+                        {user_object.role === 'admin' ? <option value="closed">Closed</option> : null}
+                    </select>               
+                    :null}
                 </div>
                 <div className="input-group">
                     <label>Priority</label>

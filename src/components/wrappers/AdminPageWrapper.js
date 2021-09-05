@@ -30,7 +30,7 @@ function CreateNewProject(){
                 }
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
                     method  : 'POST',
-                    body : JSON.stringify(project_body),
+                    body : JSON.stringify({...project_body , user : [...users , ...managers]}),
                     headers : {
                         'Authorization' : 'Bearer ' + localStorage.getItem('token'),
                         'Content-Type' : "application/json"
