@@ -2,7 +2,7 @@ import { faBoxOpen, faClock } from "@fortawesome/free-solid-svg-icons"
 import { faTrashAlt as faTrash } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import GeneralList from "./GeneralList"
-import { useFetch } from "../utils/hooks"
+import { useFetch , useLoggedOutAlert } from "../utils/hooks"
 import { useContext , useState } from "react"
 import { LoadingContext, UserContext } from "../utils/contexts"
 
@@ -21,6 +21,7 @@ export const TimeLogSingle = ({
     const hours_part = hours ? Math.floor(hours) : "0";
     const minutes_part = hours ? Math.trunc((hours - hours_part) * 60) : "0"
     const [ , dispatch_load_obj] = useContext(LoadingContext)
+    const logged_out_dialog = useLoggedOutAlert();
 
     const deleteTimeLog = async ()=>{
         try{
@@ -36,7 +37,7 @@ export const TimeLogSingle = ({
                 dispatch_load_obj(['info','Deleted Succesfully']);
             }
             else{
-                dispatch_load_obj(['info','Some Error Occurred']);
+                await logged_out_dialog(response);
             }
         }
         catch(e){

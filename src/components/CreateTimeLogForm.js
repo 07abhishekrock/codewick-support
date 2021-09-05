@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { LoadingContext, UserContext } from '../utils/contexts';
-import { logged_out_dialog } from '../utils/functions';
+import { useLoggedOutAlert } from '../utils/hooks';
 
 function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogsList}) {
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const [user_object] = useContext(UserContext);
+    const logged_out_dialog = useLoggedOutAlert();
     const time_log_form = useFormik({
         initialValues : {
             activity : "development",
@@ -47,7 +48,7 @@ function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogs
                     dispatch_load_obj(['info','Time Logged Succesfully']);
                 }
                 else{
-                   await logged_out_dialog(dispatch_load_obj, response); 
+                   await logged_out_dialog(response); 
                 }
             }
             catch(e){

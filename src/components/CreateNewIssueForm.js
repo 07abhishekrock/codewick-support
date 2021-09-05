@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { useFormik } from 'formik';
 import { LoadingContext , UserContext } from '../utils/contexts';
-import { useFetch } from '../utils/hooks';
+import { useFetch , useLoggedOutAlert } from '../utils/hooks';
 import * as yup from 'yup';
 import QuillEditor from './QuillEditor';
-import { logged_out_dialog } from '../utils/functions';
 
 function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDialog}){
     const [, dispatch_load_object] = useContext(LoadingContext);
@@ -12,6 +11,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
     const [all_members , set_all_members] = useState([]);
     // const user_object = JSON.parse((localStorage.getItem('user'));
     const [user_object] = useContext(UserContext);
+    const logged_out_dialog = useLoggedOutAlert();
     useFetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project_id , 'GET' , true , {} , 
         ()=>{
             dispatch_load_object(['load', 'Loading Options']);
@@ -66,7 +66,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                     dispatch_load_object(['info','Issue Added Succesfully']);
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_object, response);
+                    await logged_out_dialog(response);
                 }
             }
             catch(e){

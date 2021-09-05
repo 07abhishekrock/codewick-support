@@ -7,7 +7,6 @@ export const logged_out_dialog = async (dispatch_load_object , response)=>{
             buttonCallback : ()=>{
                 localStorage.removeItem('user');
                 dispatch_load_object(['idle']);
-                window.location.reload();
             },
             onRetry : null
         }])

@@ -4,9 +4,10 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React, { useState , useRef, useContext } from 'react'
 import { LoadingContext } from '../../utils/contexts';
-import { logged_out_dialog } from '../../utils/functions';
+import { useLoggedOutAlert } from '../../utils/hooks';
 function CreateNewProject(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
     const project_form = useFormik({
         initialValues : {
             title : "",
@@ -40,7 +41,7 @@ function CreateNewProject(){
                     dispatch_load_obj(['info','Project Added Succesfully']);
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_obj , response);
+                    await logged_out_dialog(response);
                 }
             }
             catch(e){
@@ -160,6 +161,7 @@ function CreateNewProject(){
 
 function CreateNewUser(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
     const user_form = useFormik({
         initialValues : {
             name : '',
@@ -190,7 +192,7 @@ function CreateNewUser(){
                     dispatch_load_obj(['info','User Added Succesfully']);
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_obj , response);
+                    await logged_out_dialog(response);
                 }
             }
             catch(e){

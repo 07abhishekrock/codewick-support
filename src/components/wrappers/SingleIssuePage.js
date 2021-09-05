@@ -5,7 +5,7 @@ import React, { useContext, useState } from "react"
 import { GeneralBoxWrapper } from "../GeneralList"
 import SingleNoteItem from "../SingleNoteItem"
 import { useParams } from "react-router"
-import { useFetch } from "../../utils/hooks"
+import { useFetch, useLoggedOutAlert } from "../../utils/hooks"
 import { LoadingContext, UserContext } from "../../utils/contexts"
 import EditorWithUpdate from "../EditorWithUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +27,7 @@ const getDateStringForInputBox = (date)=>{
 const EditIssueSection = ({issue_data, set_issue_data})=>{
 
     const [user_object] = useContext(UserContext);
+    const logged_out_dialog = useLoggedOutAlert();
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -59,7 +60,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     dispatch_load_obj(['info', 'Issue Updated Succesfully']);
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_obj , response);
+                    await logged_out_dialog(response);
                 }
             }
             catch(e){
@@ -222,6 +223,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
 
 const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
     const [,dispatch_load_object] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
 
     const upsertList = async (new_note)=>{
         try{
@@ -245,7 +247,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                     return;
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_object , response);
+                    await logged_out_dialog(response);
                 }
             }
             else{
@@ -266,7 +268,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                     return;
                 }
                 else{
-                    await logged_out_dialog(dispatch_load_object , response);
+                    await logged_out_dialog(response);
                 }
             }
         }
@@ -288,7 +290,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                 set_notes(notes.filter(note=>note._id !== note_id));
             }
             else{
-                await logged_out_dialog(dispatch_load_object , response);
+                await logged_out_dialog(response);
             }
         }
         catch(e){

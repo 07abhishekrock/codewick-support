@@ -131,7 +131,7 @@ function App() {
                 {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found}}/> : <Redirect to="/"></Redirect>}
               </Route>
               <Route path="/">
-                {!(user_found && user_found._id) ? <Redirect to="/login"></Redirect> : <>
+                {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found}}/> : <>
                 <NavbarWithSearch/>
                 <Route exact path="/">
                   <HomePageGrid user={user_found}>

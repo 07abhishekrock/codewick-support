@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { LoadingContext } from "./contexts";
+import { LoadingContext, UserContext } from "./contexts";
 
 export const useFetch = (url , method , isSecure , headers , pre_request_callback ,  success_callback , failure_callback , blockingParamValue=true)=>{
     const [response , set_response] = useState(null);
     const [,dispatch_load_obj] = useContext(LoadingContext);
+    const [,set_user_object] = useContext(UserContext);
     useEffect(async ()=>{
         try{
             if(!blockingParamValue) return;
@@ -30,7 +31,7 @@ export const useFetch = (url , method , isSecure , headers , pre_request_callbac
                         buttonCallback : ()=>{
                             localStorage.removeItem('user');
                             dispatch_load_obj(['idle']);
-                            window.location.reload();
+                            set_user_object(null);
                         },
                         onRetry : null
                     }])
@@ -50,4 +51,30 @@ export const useFetch = (url , method , isSecure , headers , pre_request_callbac
     },[url , blockingParamValue])
 
     return response;
+}
+
+
+export const useLoggedOutAlert = ()=>{
+
+    const [,set_user_object] = useContext(UserContext);
+    const [,dispatch_load_object] = useContext(LoadingContext);
+
+    return async (response)=>{
+        const error_obj = await response.json();
+        if(response.status === 401){
+            dispatch_load_object(['error' , {
+                error : error_obj.message,
+                buttonText : "Login Now",
+                buttonCallback : ()=>{
+                    localStorage.removeItem('user');
+                    dispatch_load_object(['idle']);
+                    set_user_object(null);
+                },
+                onRetry : null
+            }])
+        }
+        else{
+            dispatch_load_object(['info','Some Error Occurred']);
+        }
+    }
 }

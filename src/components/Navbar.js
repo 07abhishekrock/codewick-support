@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch, faTimes, faUser } from "@fortawesome/free-solid-svg-icons"
 import { useContext, useEffect, useRef , useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation , useHistory } from "react-router-dom"
 import { UserContext } from "../utils/contexts";
 
 function includesMultiple(target_array , ...target_values){
@@ -18,6 +18,7 @@ function includesMultiple(target_array , ...target_values){
 
 const NavbarWithSearch = ()=>{
     const [visible , setVisible] = useState(0);
+    const history = useHistory();
 
     const [current_selected , set_currently_selected] = useState(2);
     const routes_array = useLocation().pathname.split('/');
@@ -38,7 +39,7 @@ const NavbarWithSearch = ()=>{
     },[routes_array])
 
     const search_bar_ref = useRef(null);
-    const [user_object] = useContext(UserContext);
+    const [user_object , set_user_object] = useContext(UserContext);
     return (
         <nav>
             <div className="user-widget" tabIndex="1">
@@ -46,7 +47,8 @@ const NavbarWithSearch = ()=>{
                 <Link to="/profile">{user_object && user_object.name}</Link>
                 <span onClick={()=>{
                     localStorage.removeItem('token');
-                    window.location.reload();
+                    set_user_object(null);
+                    history.push('/login');
                 }}>Logout</span>
             </div>
             <div className="logo-nav-wrapper">

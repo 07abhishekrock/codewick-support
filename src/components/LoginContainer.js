@@ -1,7 +1,9 @@
 import { useFormik } from "formik";
-import { useHistory } from "react-router";
+import { useContext } from "react/cjs/react.development";
 import * as yup from 'yup';
+import { LoadingContext } from "../utils/contexts";
 const LoginContainer = ({set_user_found})=>{
+    const [,dispatch_load_obj] = useContext(LoadingContext);
     const login_form = useFormik({
         initialValues : {
             email : '',
@@ -14,8 +16,8 @@ const LoginContainer = ({set_user_found})=>{
         validateOnBlur : false,
         validateOnChange : false,
         onSubmit : async (values)=>{
-            console.log(values);
             try{
+                dispatch_load_obj(['load','Logging You In !!!']);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user/login',
                 {
                     method : 'POST',
@@ -31,12 +33,12 @@ const LoginContainer = ({set_user_found})=>{
                     set_user_found(user_data.data.user);
                 }
                 else if(response.status == 401){
-                    alert('Invalid email or password');
+                    dispatch_load_obj(['info','Wrong Credentials !!!']);
                 }
                 console.log('success');
             }
             catch(error){
-                alert(error.message);
+                dispatch_load_obj(['info','Some Error Occurred !']);
             }
         }
     })
