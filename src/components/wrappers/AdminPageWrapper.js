@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React, { useState , useRef, useContext } from 'react'
 import { LoadingContext } from '../../utils/contexts';
+import { logged_out_dialog } from '../../utils/functions';
 function CreateNewProject(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const project_form = useFormik({
@@ -29,16 +30,17 @@ function CreateNewProject(){
                 }
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
                     method  : 'POST',
-                    body : JSON.stringify(project_body),
+                    body : JSON.stringify({...project_body , user : [...users , ...managers]}),
                     headers : {
-                        'Authorization' : 'Bearer ' + localStorage.getItem('token')
+                        'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type' : "application/json"
                     }
                 })
                 if(response.ok){
                     dispatch_load_obj(['info','Project Added Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                    await logged_out_dialog(dispatch_load_obj , response);
                 }
             }
             catch(e){
@@ -145,7 +147,7 @@ function CreateNewProject(){
                     })}
                 </div>
             </div>
-            <div>
+            <div className="error-div">
                 {project_form.errors.title ? <i className="error">{project_form.errors.title}</i> : null}
                 {project_form.errors.users ? <i className="error">{project_form.errors.users}</i> : null}
             </div>
@@ -180,14 +182,15 @@ function CreateNewUser(){
                     method : 'POST',
                     body : JSON.stringify(values),
                     headers : {
-                        "Authorization" : "Bearer " + localStorage.getItem('token')
+                        "Authorization" : "Bearer " + localStorage.getItem('token'),
+                        "Content-Type" : "application/json"
                     }
                 })
                 if(response.ok){
-                    dispatch_load_obj(['info','Added Succesfully']);
+                    dispatch_load_obj(['info','User Added Succesfully']);
                 }
                 else{
-                    dispatch_load_obj(['info','Some Error Occurred']);
+                    await logged_out_dialog(dispatch_load_obj , response);
                 }
             }
             catch(e){
@@ -224,6 +227,13 @@ function CreateNewUser(){
                     <option value="developer">Developer</option>
                     <option value="customer">Customer</option>
                 </select>
+            </div>
+            <div className="error-div">
+                {user_form.errors.email ? <i>{user_form.errors.email}</i> : null}
+                {user_form.errors.password ? <i>{user_form.errors.password}</i> : null}
+                {user_form.errors.phoneNo ? <i>{user_form.errors.phoneNo}</i> : null}
+                {user_form.errors.role ? <i>{user_form.errors.role}</i> : null}
+                {user_form.errors.name ? <i>{user_form.errors.name}</i> : null}
             </div>
             <div className="btn-group">
                 <button>Add User</button>

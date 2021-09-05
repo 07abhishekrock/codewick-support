@@ -38,7 +38,9 @@ div.modal-wrapper{
     }
     overflow:auto;
     inset:0px;
-    background-color:rgba(0,0,0,0.7);
+    background-color:rgba(0,0,0,0.8);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display:grid;
     place-items:center;
     animation:fade-in 0.3s ease-in-out;
@@ -68,12 +70,15 @@ div.modal-wrapper{
         align-items:center;
         justify-content:center;
         padding:1.5em;
+        text-align:center;
         z-index:2;
         &[rotate="1"]{
             color:red;
         }
         &[rotate="0"]{
             color:black;
+        }
+        &[load="1"]{
             &>svg{
                 animation:rotation 2s ease-out infinite;
             }

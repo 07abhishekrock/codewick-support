@@ -1,10 +1,10 @@
 import React , {useContext} from 'react'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LoadingContext } from '../utils/contexts';
+import { LoadingContext, UserContext } from '../utils/contexts';
 
 function UserProfilePage() {
-    const user_object = JSON.parse(localStorage.getItem('user'));
+    const [user_object] = useContext(UserContext);
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const user_form = useFormik({
         initialValues : {

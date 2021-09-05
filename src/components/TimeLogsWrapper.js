@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import GeneralList from "./GeneralList"
 import { useFetch } from "../utils/hooks"
 import { useContext , useState } from "react"
-import { LoadingContext } from "../utils/contexts"
+import { LoadingContext, UserContext } from "../utils/contexts"
 
 export const TimeLogSingle = ({
     id,
@@ -71,10 +71,9 @@ export const TimeLogSingle = ({
 }
 
 
-const TimeLogsWrapper = ({issue_id})=>{
+const TimeLogsWrapper = ({issue_id , time_logs_data , set_time_logs_data})=>{
     const [,dispatch_load_obj] = useContext(LoadingContext);
-    const [time_logs_data , set_time_logs_data] = useState([]);
-    const current_user_role = JSON.parse(localStorage.getItem('user')).role;
+    const [current_user] = useContext(UserContext);
     const [current_page , set_current_page] = useState(1);
     useFetch(`https://api-redmine.herokuapp.com/api/v1/log?page=${current_page}&limit=10&issue=` + issue_id,'GET',true,{},
     ()=>{
@@ -106,7 +105,7 @@ const TimeLogsWrapper = ({issue_id})=>{
             {time_logs_data.map((time_log)=>{
                return <TimeLogSingle key={time_log.id} {...time_log} deleteLog={(id)=>{
                 set_time_logs_data(time_logs_data.filter(time_log => time_log.id !== id));
-               }} isDeletable={current_user_role === 'admin' ? true : false}/>
+               }} isDeletable={current_user.role === 'admin' ? true : false}/>
             })}
             {time_logs_data.length === 0 ? <EmptyLogElement/> : null}
         </GeneralList>

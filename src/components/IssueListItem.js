@@ -14,6 +14,7 @@ const IssueListItem = ({
     updatedAt,
     status,
     _id,
+    timeSpent
 })=>{
     return (
         <div className="issue-list-item">
@@ -46,7 +47,7 @@ const IssueListItem = ({
                 </div>
                 <div className="issue-item-options">
                     <Link to={`../../issues/${_id}`}><FontAwesomeIcon icon={faPenNib}/>Edit Issue</Link>
-                    <a>4:00 Hrs</a>
+                    <Link to={`/issues/${_id}/time_entries`}>{timeSpent || 0}&nbsp;Hrs</Link>
                 </div>
             </div>
         </div>

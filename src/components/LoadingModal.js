@@ -6,15 +6,20 @@ function LoadingModal({load_object : {
     loading,
     loadingText,
     error,
-    retryCallback
+    retryCallback,
+    buttonText,
+    buttonCallback
 }, dispatch_load_object : dispatch_load_obj}) {
+    console.log(buttonText , buttonCallback);
     return (loading !== 'idle' || error || loading === 'info' ? <div className="modal-wrapper loading-wrapper">
-            <div className="loading-modal" error = {error ? "1" : "0"} info={loading === 'info' ? "1" : "0"}>
+            <div className="loading-modal" error = {error ? "1" : "0"} info={loading === 'info' ? "1" : "0"} load={loading === 'load' ? "1" : "0"}>
                 {error ? <FontAwesomeIcon icon={faTimesCircle}/> : null}
                 {loading === 'load' ? <FontAwesomeIcon icon={faCircleNotch}/> : null}
                 {loading === 'info' ? <FontAwesomeIcon icon={faExclamationCircle}/> : null}
                 <p>{loadingText || error}</p>
-                {loading === 'info' ? <button onClick={()=>dispatch_load_obj(['idle'])}>Close</button> : <button onClick={retryCallback}>Retry</button>}
+                {loading === 'info' ? <button onClick={()=>dispatch_load_obj(['idle'])}>Close</button> : null} 
+                {loading === 'error' && !buttonText ? <button onClick={retryCallback}>Retry</button> : null}
+                {buttonText ? <button onClick={buttonCallback}>{buttonText}</button> : null}
             </div> 
         </div> : null
     )

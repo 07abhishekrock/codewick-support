@@ -24,6 +24,7 @@ div.admin-page-wrapper{
         grid-gap:1em;
         &>span{
             color:white;
+            background:variables.$primary_color;
             padding:0.5em 1em;
             text-align:center;
             cursor:pointer;
@@ -146,6 +147,17 @@ form.modal-form{
                 border:2px solid black;
                 border-radius:0.2em;
             }
+        }
+
+
+    }
+    div.error-div{
+        margin-bottom:1em;
+        &>i{
+            font-style:normal;
+            color:red;
+            font-weight:bold;
+            display:block;
         }
     }
     &>div.btn-group{

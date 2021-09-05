@@ -26,10 +26,6 @@ const projectOptions = [
         to : 'roadmap'
     },
     {
-        label : "spent time",
-        to : 'time_entries'
-    },
-    {
         label : "Settings",
         to : 'settings'
     },

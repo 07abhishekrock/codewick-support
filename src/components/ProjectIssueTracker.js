@@ -1,5 +1,6 @@
 import { faBug, faExchangeAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Link } from "react-router-dom"
 
 const ProjectIssueTracker = ({features , bugs})=>{
     return (
@@ -39,8 +40,7 @@ const ProjectIssueTracker = ({features , bugs})=>{
                 </div>
             </div>
             <div className="buttons-grp">
-                <button>View All Issues</button>
-                <button>Summary</button>
+                <Link to="./issues">View All Issues</Link>
             </div>
         </div>
     )

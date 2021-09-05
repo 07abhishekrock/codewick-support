@@ -1,15 +1,17 @@
 import React, { useContext, useState } from 'react'
 import { useFormik } from 'formik';
-import { LoadingContext } from '../utils/contexts';
+import { LoadingContext , UserContext } from '../utils/contexts';
 import { useFetch } from '../utils/hooks';
 import * as yup from 'yup';
 import QuillEditor from './QuillEditor';
+import { logged_out_dialog } from '../utils/functions';
 
 function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDialog}){
     const [, dispatch_load_object] = useContext(LoadingContext);
     const current_project_id = (projects_array[0] && projects_array[0].id) || null;
     const [all_members , set_all_members] = useState([]);
-    const user_object = JSON.parse(localStorage.getItem('user'));
+    // const user_object = JSON.parse((localStorage.getItem('user'));
+    const [user_object] = useContext(UserContext);
     useFetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project_id , 'GET' , true , {} , 
         ()=>{
             dispatch_load_object(['load', 'Loading Options']);
@@ -32,8 +34,8 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
             description : '',
             tracker : 'feature',
             priority : 'normal',
-            assignee : '',
-            reviewer : '',
+            assignee : 'None',
+            reviewer : 'None',
             createdBy : user_object._id,
             status : 'new'
         },
@@ -46,6 +48,9 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
         }),
         onSubmit : async (values)=>{
             try{
+                if(values.assignee === 'None') values.assignee = null;
+                if(values.reviewer === 'None') values.reviewer = null;
+
                 dispatch_load_object(['load','Adding Issue to Project']);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue' , {
                     method : 'POST',
@@ -61,7 +66,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                     dispatch_load_object(['info','Issue Added Succesfully']);
                 }
                 else{
-                    dispatch_load_object(['info','Issue could not be added']);
+                    await logged_out_dialog(dispatch_load_object, response);
                 }
             }
             catch(e){

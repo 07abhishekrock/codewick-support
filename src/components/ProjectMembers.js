@@ -1,7 +1,14 @@
 import { faCrown, faTerminal, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
+
 const ProjectMembers = ({members})=>{
+    const checkUserIsManager = (user_object)=>{
+        const isFound = members.managers.filter((manager)=>{
+            return (manager._id === user_object._id);
+        })
+        return Boolean(isFound.length);
+    }
     return (
         <div className="project-members">
             <i><FontAwesomeIcon icon={faUsers}/></i>
@@ -13,7 +20,9 @@ const ProjectMembers = ({members})=>{
             </div>
             <div className="members-list developers">
                 {members.users.map((user)=>{
-                    return <a key={user._id}><FontAwesomeIcon icon={faTerminal}/>{user.name}</a>
+                    if(!checkUserIsManager(user)){
+                        return <a key={user._id}><FontAwesomeIcon icon={faTerminal}/>{user.name}</a>
+                    }
                 })}
             </div>
         </div>
