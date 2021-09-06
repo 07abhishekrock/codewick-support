@@ -1,1 +1,1 @@
-codewick react support page
+Codewick Frontend Project
