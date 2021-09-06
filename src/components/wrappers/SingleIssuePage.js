@@ -195,7 +195,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>
                 <hr/>
-                {issue_data && issue_data._id ? <DeleteModal 
+                {user_object.role === 'admin' && issue_data && issue_data._id ? <DeleteModal 
                 BtnLabel="Delete This Issue" 
                 YesLabel="Yes, Delete" 
                 NoLabel="No, Cancel"

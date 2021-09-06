@@ -18,9 +18,11 @@ function UpdateProject(){
             title : "",
             members : [],
             description : "",
+            project : null
         },
         validationSchema : yup.object({
             title : yup.string().required(),
+            project : yup.string().required('Select A Project First').nullable()
         }),
         onSubmit : async ({title , description , members})=>{
             try{
@@ -73,6 +75,7 @@ function UpdateProject(){
                     set_current_project(project);
                     const formatted_project = {
                         ...project,
+                        project : project._id,
                         members : project.user.map((user)=>{
                             if(project.manager.filter((manager)=>manager._id === user._id).length > 0){
                                 return {...user , status : 'manager'}
@@ -169,6 +172,7 @@ function UpdateProject(){
             </div>
             <div className="error-div">
                 {project_form.errors.title ? <i className="error">{project_form.errors.title}</i> : null}
+                {project_form.errors.project ? <i className="error">{project_form.errors.project}</i> : null}
             </div>
             {current_project && current_project._id ? <DeleteModal 
             BtnLabel="Delete This Project" 
