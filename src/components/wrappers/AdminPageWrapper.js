@@ -1,44 +1,50 @@
-import { faPlus, faPlusCircle, faTimesCircle , faSearch, faTrophy } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React, { useState , useRef, useContext } from 'react'
 import { LoadingContext } from '../../utils/contexts';
 import { useLoggedOutAlert } from '../../utils/hooks';
-function CreateNewProject(){
+import SearchBoxWithList from '../SearchBoxWithList';
+import { createAndDispatchClearEvent } from '../SearchBoxWithList';
+import DeleteModal from '../DeleteModal';
+
+function UpdateProject(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const logged_out_dialog = useLoggedOutAlert();
+    const [current_project , set_current_project] = useState({});
     const project_form = useFormik({
         initialValues : {
             title : "",
             members : [],
             description : "",
-            users:[],
-            managers : []
         },
         validationSchema : yup.object({
             title : yup.string().required(),
-            users : yup.array().min(1),
         }),
-        onSubmit : async ({title , users , managers , description})=>{
+        onSubmit : async ({title , description , members})=>{
             try{
                 const project_body = {
                     title,
-                    user : users, 
-                    manager : managers,
+                    user : members.map(member => member._id), 
+                    manager : members.filter(member => member.status === 'manager').map(manager => manager._id),
                     description,
-                    totalFeature : 0
                 }
-                const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
-                    method  : 'POST',
-                    body : JSON.stringify({...project_body , user : [...users , ...managers]}),
+                dispatch_load_obj(['load' , 'Updating Project']);
+                const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project._id ,{
+                    method  : 'PATCH',
+                    body : JSON.stringify(project_body),
                     headers : {
                         'Authorization' : 'Bearer ' + localStorage.getItem('token'),
                         'Content-Type' : "application/json"
                     }
                 })
                 if(response.ok){
-                    dispatch_load_obj(['info','Project Added Succesfully']);
+                    project_form.resetForm();
+                    set_current_project({});
+                    createAndDispatchClearEvent("projects-list");
+                    createAndDispatchClearEvent("members-list");
+                    dispatch_load_obj(['info','Project Updated Succesfully']);
                 }
                 else{
                     await logged_out_dialog(response);
@@ -49,9 +55,203 @@ function CreateNewProject(){
             }
         }
     });
-    const [search_users , set_search_users] = useState([]);
-    const [loading , set_loading] = useState(false);
-    const typing_timeout = useRef(null);
+    return (
+        <form className="modal-form" onSubmit={(e)=>{
+            e.preventDefault();
+            project_form.submitForm();
+        }}>
+            <h3>Update Existing Project</h3>
+            <div className="input-group single-column">
+                <label htmlFor="all-projects">Select Project</label>
+                <SearchBoxWithList 
+                identifier = "projects-list"
+                added_list_heading = "Selected Project"
+                nameAttribute = "title"
+                searchURLGenerator = {keyword=>`https://api-redmine.herokuapp.com/api/v1/project?title[$regex]=^${keyword}&title[$options]=i&limit=6`}
+                getDataFromResponse = {data => data.data.data}
+                selectItem = {(project)=>{
+                    set_current_project(project);
+                    const formatted_project = {
+                        ...project,
+                        members : project.user.map((user)=>{
+                            if(project.manager.filter((manager)=>manager._id === user._id).length > 0){
+                                return {...user , status : 'manager'}
+                            }
+                            return {...user , status : 'user'}
+                        }),
+                    }
+                    project_form.setValues(formatted_project);
+                }}
+                isSelected = {(project)=>project._id === current_project._id}
+                selectedItems = {current_project._id ? [current_project] : []}
+                operationsOnItems = {[
+                    {
+                        label : 'Drop Selection',
+                        onClick : ()=>{
+                            set_current_project({});
+                            project_form.resetForm();
+                        },
+                        isEnabled : ()=>true
+                    }
+                ]}
+                /> 
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="project-title">Project Title</label>
+                <input id="project-title" type="text" {...project_form.getFieldProps('title')}/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="project-desc">Project Description</label>
+                <textarea id="project-desc" {...project_form.getFieldProps('description')}></textarea>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="add-members">Add Members</label>
+                <SearchBoxWithList
+                identifier = "members-list"
+                added_list_heading = "Added Members"
+                nameAttribute = "name"
+                searchURLGenerator = {keyword => `https://api-redmine.herokuapp.com/api/v1/user?name[$regex]=^${keyword}&name[$options]=i&limit=6`}
+                getDataFromResponse = {data => data.data.data}
+                selectItem = {(user)=>{
+                    const isFound = project_form.values.members.filter(member=>member._id === user._id)
+                    if(isFound.length === 0){
+                        project_form.setFieldValue('members',
+                            [...project_form.values.members , {...user , status:"user"}]
+                        )
+                    }
+                }}
+                isSelected = {(user)=>project_form.values.members.filter(member => member._id === user._id).length > 0}
+                selectedItems = {project_form.values.members}
+                operationsOnItems = {[
+                    {
+                        label : 'Add As User',
+                        onClick : (user)=>{
+                            const new_users = project_form.values.members.map((member)=>{
+                                if(member._id === user._id){
+                                    return { ...member , status : 'user'};
+                                }
+                                return member;
+                            })
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : (user)=>{
+                            const members = project_form.values.members;
+                            return members.filter((member)=>member._id === user._id)[0]?.status === 'manager' 
+                        }
+                    },
+                    {
+                        label : 'Add As Manager',
+                        onClick : (user)=>{
+                            const new_users = project_form.values.members.map((member)=>{
+                                if(member._id === user._id){
+                                    return { ...member , status : 'manager'};
+                                }
+                                return member;
+                            })
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : (user)=>{
+                            const members = project_form.values.members;
+                            return members.filter((member)=>member._id === user._id)[0]?.status === 'user' 
+                        }
+                    },
+                    {
+                        label : 'Delete Member',
+                        onClick : (user)=>{
+                            console.log('deleting member');
+                            const new_users = project_form.values.members.filter(member => member._id !== user._id);
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : ()=>true
+                    }
+                ]}
+                />
+            </div>
+            <div className="error-div">
+                {project_form.errors.title ? <i className="error">{project_form.errors.title}</i> : null}
+            </div>
+            {current_project && current_project._id ? <DeleteModal 
+            BtnLabel="Delete This Project" 
+            YesLabel="Yes, Delete" 
+            NoLabel="No, Cancel"
+            onDelete={async ()=>{
+                try{
+                    dispatch_load_obj(['load' , 'Deleting Project']);
+                    const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project._id ,{
+                        method  : 'DELETE',
+                        headers : {
+                            'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                            'Content-Type' : "application/json"
+                        }
+                    })
+                    if(response.ok){
+                        project_form.resetForm();
+                        set_current_project({});
+                        createAndDispatchClearEvent("projects-list");
+                        createAndDispatchClearEvent("members-list");
+                        dispatch_load_obj(['info','Project Deleted Succesfully']);
+                    }
+                    else{
+                        await logged_out_dialog(response);
+                    }
+                }
+                catch(e){
+                    dispatch_load_obj(['info','Some Error Occurred']);
+                }
+            }}
+            />:null}
+            <div className="btn-group">
+                <button>Update Project</button>
+            </div>
+        </form>
+    )
+}
+
+function CreateNewProject(){
+    const [,dispatch_load_obj] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
+    const project_form = useFormik({
+        initialValues : {
+            title : "",
+            members : [],
+            description : "",
+        },
+        validationSchema : yup.object({
+            title : yup.string().required(),
+        }),
+        onSubmit : async ({title , description , members})=>{
+            try{
+                const project_body = {
+                    title,
+                    user : members.map(member => member._id), 
+                    manager : members.filter(member => member.status === 'manager').map(manager => manager._id),
+                    description,
+                    totalFeature : 0,
+                    totalBug : 0
+                }
+                dispatch_load_obj(['load' , 'Creating Project']);
+                const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
+                    method  : 'POST',
+                    body : JSON.stringify(project_body),
+                    headers : {
+                        'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type' : "application/json"
+                    }
+                })
+                if(response.ok){
+                    project_form.resetForm();
+                    createAndDispatchClearEvent("members-list");
+                    dispatch_load_obj(['info','Project Created Succesfully']);
+                }
+                else{
+                    await logged_out_dialog(response);
+                }
+            }
+            catch(e){
+                dispatch_load_obj(['info','Some Error Occurred']);
+            }
+        }
+    });
     return (
         <form className="modal-form" onSubmit={(e)=>{
             e.preventDefault();
@@ -68,89 +268,69 @@ function CreateNewProject(){
             </div>
             <div className="input-group single-column">
                 <label htmlFor="add-members">Add Members</label>
-                <div className="search-bar-with-list">
-                    <div className="inner-search-bar">
-                        <FontAwesomeIcon icon={faSearch}/>
-                        <input type="text" placeholder="Start Typing Names" onChange={(e)=>{
-                            clearTimeout(typing_timeout.current);
-                            if(e.target.value.trim()){
-                                typing_timeout.current = setTimeout(async ()=>{
-                                    try{
-                                        set_loading(true);
-                                        const response = await fetch("https://api-redmine.herokuapp.com/api/v1/user?name[$options]=i&limit=6&name[$regex]=" + e.target.value.trim() , 
-                                        {
-                                            method : 'GET',
-                                            headers : {
-                                                "Authorization" : "Bearer " + localStorage.getItem('token')
-                                            }
-                                        });
-                                        if(response.ok){
-                                            const user_data = await response.json();
-                                            set_search_users(user_data.data.data);
-                                            set_loading(false);
-                                        }
-                                    } 
-                                    catch(e){
-                                        console.error(e);
-                                    }
-                                } , 800)
-                            }
-                        }}/>
-                    </div>
-                    <div className="search-list">
-                        {
-                        loading ? <h1>Loading Users...</h1> : search_users.map((search_user)=>{
-                            if(project_form.values.members.filter(member => member._id === search_user._id).length === 0){
-                                return (
-                                    <div className="search-list-item" key={search_user._id}>
-                                    {search_user.name}
-                                    <span onClick={()=>{
-                                        console.log('added');
-                                        project_form.setFieldValue('members',[...project_form.values.members , search_user]);
-                                        project_form.setFieldValue('users',[...project_form.values.users , search_user._id])
-                                    }}>Add Member</span>
-                                </div>
-                                )
-                            }
-                            return (
-                                <div className="search-list-item" key={search_user._id}>
-                                    {search_user.name}
-                                    <span>Added</span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-                <h3>Added Members</h3>
-                <div className="selected-items">
-                    {project_form.values.members.map((target_single_user)=>{
-                        return <span key={target_single_user._id}>
-                            {target_single_user.name}
-                            &nbsp;
-                            {project_form.values.managers.includes(target_single_user._id) ? null : <button onClick={()=>{
-                                const user_id = target_single_user._id;
-                                project_form.setFieldValue('users',project_form.values.users.filter(user=>user!==user_id));
-                                project_form.setFieldValue('managers',[...project_form.values.managers , user_id]);
-                            }}>Add As Manager</button>}
-                            {project_form.values.users.includes(target_single_user._id) ? null : <button onClick={()=>{
-                                const user_id = target_single_user._id;
-                                project_form.setFieldValue('managers',project_form.values.managers.filter(manager=>manager!==user_id));
-                                project_form.setFieldValue('users',[...project_form.values.users , user_id]);
-                            }}
-                            >Add As User</button>}
-                            <button onClick={()=>{
-                                const user_id = target_single_user._id;
-                                project_form.setFieldValue('managers',project_form.values.managers.filter(manager=>manager!==user_id));
-                                project_form.setFieldValue('users',project_form.values.users.filter(user=>user!==user_id));
-                                project_form.setFieldValue('members',project_form.values.members.filter(member=>member._id!==user_id));
-                            }}>Delete Member</button>
-                        </span>
-                    })}
-                </div>
+                <SearchBoxWithList
+                identifier = "members-new-list"
+                added_list_heading = "Added Members"
+                nameAttribute = "name"
+                searchURLGenerator = {keyword => `https://api-redmine.herokuapp.com/api/v1/user?name[$regex]=^${keyword}&name[$options]=i&limit=6`}
+                getDataFromResponse = {data => data.data.data}
+                selectItem = {(user)=>{
+                    const isFound = project_form.values.members.filter(member=>member._id === user._id)
+                    if(isFound.length === 0){
+                        project_form.setFieldValue('members',
+                            [...project_form.values.members , {...user , status:"user"}]
+                        )
+                    }
+                }}
+                isSelected = {(user)=>project_form.values.members.filter(member => member._id === user._id).length > 0}
+                selectedItems = {project_form.values.members}
+                operationsOnItems = {[
+                    {
+                        label : 'Add As User',
+                        onClick : (user)=>{
+                            const new_users = project_form.values.members.map((member)=>{
+                                if(member._id === user._id){
+                                    return { ...member , status : 'user'};
+                                }
+                                return member;
+                            })
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : (user)=>{
+                            const members = project_form.values.members;
+                            return members.filter((member)=>member._id === user._id)[0]?.status === 'manager' 
+                        }
+                    },
+                    {
+                        label : 'Add As Manager',
+                        onClick : (user)=>{
+                            const new_users = project_form.values.members.map((member)=>{
+                                if(member._id === user._id){
+                                    return { ...member , status : 'manager'};
+                                }
+                                return member;
+                            })
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : (user)=>{
+                            const members = project_form.values.members;
+                            return members.filter((member)=>member._id === user._id)[0]?.status === 'user' 
+                        }
+                    },
+                    {
+                        label : 'Delete Member',
+                        onClick : (user)=>{
+                            console.log('deleting member');
+                            const new_users = project_form.values.members.filter(member => member._id !== user._id);
+                            project_form.setFieldValue('members',new_users);
+                        },
+                        isEnabled : ()=>true
+                    }
+                ]}
+                />
             </div>
             <div className="error-div">
                 {project_form.errors.title ? <i className="error">{project_form.errors.title}</i> : null}
-                {project_form.errors.users ? <i className="error">{project_form.errors.users}</i> : null}
             </div>
             <div className="btn-group">
                 <button>Add Project</button>
@@ -248,7 +428,8 @@ function AdminPageWrapper() {
     const [current_selected_form , set_current_selected_form] = useState(0);
     const options = [
         'Create a New Project',
-        'Create a New User'
+        'Create a New User',
+        'Update Project'
     ]
     return (
         <div className="admin-page-wrapper">
@@ -271,6 +452,7 @@ function AdminPageWrapper() {
             <div className="admin-page-modal-wrapper">
                 {current_selected_form === 0 ? <CreateNewProject/> : null}
                 {current_selected_form === 1 ? <CreateNewUser/> : null}
+                {current_selected_form === 2 ? <UpdateProject/> : null}
             </div>
         </div>
     )

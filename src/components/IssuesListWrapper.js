@@ -57,7 +57,7 @@ const IssuesListWrapper = ({all_issues , onNext , onPrev , search_query , set_se
             {all_issues.map((issue)=>{
                 return <IssueListItem key={issue._id} {...issue}/>
             })}
-            {all_issues.length === 0 ? <EmptyIssueItem/> : null}
+            {all_issues.length === 0 ? <EmptyIssueItem key="empty-issue-item"/> : null}
         </GeneralList>
     )
 }

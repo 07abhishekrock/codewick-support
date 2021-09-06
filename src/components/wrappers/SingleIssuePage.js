@@ -7,12 +7,13 @@ import SingleNoteItem from "../SingleNoteItem"
 import { useParams } from "react-router"
 import { useFetch, useLoggedOutAlert } from "../../utils/hooks"
 import { LoadingContext, UserContext } from "../../utils/contexts"
+import { useHistory } from "react-router";
 import EditorWithUpdate from "../EditorWithUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import CreateTimeLogForm from "../CreateTimeLogForm";
 import { Link } from "react-router-dom";
-import { logged_out_dialog } from "../../utils/functions";
+import DeleteModal from "../DeleteModal";
 
 const getDateStringForInputBox = (date)=>{
     try{
@@ -28,6 +29,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
 
     const [user_object] = useContext(UserContext);
     const logged_out_dialog = useLoggedOutAlert();
+    const history = useHistory();
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -99,10 +101,10 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 e.preventDefault();
                 form_data.submitForm();
             }}>
-                {/* <div className="input-group">
+                <div className="input-group">
                     <label>Project</label>
-                    <input type="text" {...form_data.getFieldProps}/>
-                </div> */}
+                    <Link to={"/project/" + (issue_data.project && issue_data.project._id) + "/overview"}>{issue_data.project && issue_data.project.title}</Link>
+                </div>
                 <div className="input-group">
                     <label>Tracker</label>
                     <select {...form_data.getFieldProps('tracker')}>
@@ -193,6 +195,39 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>
                 <hr/>
+                {issue_data && issue_data._id ? <DeleteModal 
+                BtnLabel="Delete This Issue" 
+                YesLabel="Yes, Delete" 
+                NoLabel="No, Cancel"
+                onDelete={async ()=>{
+                    try{
+                        dispatch_load_obj(['load' , 'Deleting Issue']);
+                        const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_data._id ,{
+                            method  : 'DELETE',
+                            headers : {
+                                'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                                'Content-Type' : "application/json"
+                            }
+                        })
+                        if(response.ok){
+                            dispatch_load_obj(['error' , {
+                                error : 'Issue Deleted Succesfully',
+                                onRetry : null,
+                                buttonText : 'All Issues',
+                                buttonCallback : ()=>{
+                                    dispatch_load_obj(['idle']);
+                                    history.push(`/project/${issue_data.project._id}/issues`);
+                                }
+                            }])
+                        }
+                        else{
+                            await logged_out_dialog(response);
+                        }
+                    }
+                    catch(e){
+                        dispatch_load_obj(['info','Some Error Occurred']);
+                    }
+                }}/> : null}
                 <button>Update Form</button>
             </form>
         </>

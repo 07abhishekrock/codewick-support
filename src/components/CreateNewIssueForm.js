@@ -1,35 +1,22 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import { LoadingContext , UserContext } from '../utils/contexts';
-import { useFetch , useLoggedOutAlert } from '../utils/hooks';
+import { useLoggedOutAlert } from '../utils/hooks';
+import { useParams } from 'react-router';
+import SearchBoxWithList from './SearchBoxWithList';
 import * as yup from 'yup';
 import QuillEditor from './QuillEditor';
 
-function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDialog}){
+function CreateNewIssueForm({addNewIssue , showCombo , toggleDialog , current_project_data}){
     const [, dispatch_load_object] = useContext(LoadingContext);
-    const current_project_id = (projects_array[0] && projects_array[0].id) || null;
     const [all_members , set_all_members] = useState([]);
-    // const user_object = JSON.parse((localStorage.getItem('user'));
+    const [current_project , set_current_project] = useState({});
     const [user_object] = useContext(UserContext);
+    const { project_name: project_id } = useParams();
     const logged_out_dialog = useLoggedOutAlert();
-    useFetch('https://api-redmine.herokuapp.com/api/v1/project/' + current_project_id , 'GET' , true , {} , 
-        ()=>{
-            dispatch_load_object(['load', 'Loading Options']);
-        },
-        (data)=>{
-            dispatch_load_object(['idle']);
-            set_all_members(data.data.data.user);
-        },
-        (error)=>{
-            dispatch_load_object(['error',{
-                error,
-                onRetry : ()=>{console.log('we can retry here')}
-            }])
-        }
-    ,current_project_id)
     const create_issue_form = useFormik({
         initialValues : {
-            project : current_project_id,
+            project : project_id,
             title : '',
             description : '',
             tracker : 'feature',
@@ -61,8 +48,12 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                     body : JSON.stringify(values)
                 });
                 if(response.ok){
-                    const issue_obj = await response.json();
-                    addNewIssue(issue_obj.data.issue);
+                    const issue_response = await response.json();
+                    const issue_obj = issue_response.data.issue;
+                    addNewIssue({...issue_obj , 
+                        assignee : all_members.filter((member)=>member._id === issue_obj.assignee)[0],
+                        reviewer : all_members.filter((member)=>member._id === issue_obj.reviewer)[0],
+                    });
                     dispatch_load_object(['info','Issue Added Succesfully']);
                 }
                 else{
@@ -74,6 +65,13 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
             }
         }
     });
+    useEffect(()=>{
+        if(current_project_data && current_project_data._id){
+            create_issue_form.values.project = current_project_data._id;
+            console.log(current_project_data.user);
+            set_all_members(current_project_data.user);
+        }
+    },[current_project_data])
     return (
         <div className="modal-wrapper">
             <div className="modal-form-wrapper">
@@ -82,13 +80,34 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                     create_issue_form.submitForm();
                 }}>
                     <h3>Create New Issue</h3>
-                    {showCombo ? <div className="input-group">
-                        <label htmlFor={"project-ids"}>Project</label>
-                        <select id="project-ids" {...create_issue_form.getFieldProps('project')}>
-                            {projects_array.map((project)=>{
-                                return <option key={project.id} value={project.id}>{project.title}</option>
-                            })}
-                        </select>
+                    {showCombo ? <div className="input-group single-column">
+                    <label htmlFor={"project-ids"}>Project</label>
+                    <SearchBoxWithList 
+                    identifier = "projects-create-issue-list"
+                    added_list_heading = "Selected Project"
+                    nameAttribute = "title"
+                    searchURLGenerator = {keyword=>{
+                        if(user_object.role === 'admin') return `https://api-redmine.herokuapp.com/api/v1/project?title[$regex]=^${keyword}&title[$options]=i&limit=6`
+                        else return `https://api-redmine.herokuapp.com/api/v1/project/my-project?title[$regex]=^${keyword}&title[$options]=i&limit=6`
+                    }}
+                    getDataFromResponse = {data => data.data.data}
+                    selectItem = {(project)=>{
+                        set_current_project(project);
+                        set_all_members(project.user);
+                        create_issue_form.setFieldValue('project',project._id);
+                    }}
+                    isSelected = {(project)=>project._id === current_project._id}
+                    selectedItems = {current_project._id ? [current_project] : []}
+                    operationsOnItems = {[
+                        {
+                            label : 'Drop Selection',
+                            onClick : ()=>{
+                                set_current_project({});
+                            },
+                            isEnabled : ()=>true
+                        }
+                    ]}
+                />  
                     </div> : null} 
                     <div className="input-group single-column">
                         <label htmlFor="issue-title">Issue Title</label>
@@ -122,7 +141,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                             <select id="issue-assignee" {...create_issue_form.getFieldProps('assignee')}>
                                 <option value="None">Select An Option</option>
                                 {all_members.map((member)=>{
-                                    if(member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
+                                    if(member.role && member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
                                 })}
                             </select>
                         </div>
@@ -131,7 +150,7 @@ function CreateNewIssueForm({addNewIssue , projects_array , showCombo , toggleDi
                             <select id="issue-reviewer" {...create_issue_form.getFieldProps('reviewer')}>
                                 <option value="None">Select An Option</option>
                                 {all_members.map((member)=>{
-                                    if(member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
+                                    if(member.role && member.role !== 'customer') return <option value={member._id} key={member._id}>{member.name}</option>
                                 })}
                             </select>
                         </div>

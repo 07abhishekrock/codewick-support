@@ -32,7 +32,7 @@ const GeneralList = (props)=>{
                                 set_search_value({...search_value , search_key : e.target.value});
                             }}>
                                 {props.options.search_options.map((option)=>{
-                                    return <option value={option.value}>{option.label}</option>
+                                    return <option key={option.value} value={option.value}>{option.label}</option>
                                 })}
                             </select>
                             <input type="text" placeholder="Search Here" onChange={e => set_search_value({
@@ -52,14 +52,14 @@ const GeneralList = (props)=>{
                             set_search_filter(e.target.value);
                         }}>
                             {props.options.filter_options.map((option)=>{
-                                return <option value={option.value}>{option.label}</option>
+                                return <option value={option.value} key={option.value}>{option.label}</option>
                             })} 
                         </select> 
                     </div>
                     }
                 </div>
             </div>
-            <div className="general-list">
+            <div className="general-list" key={"list"}>
                 {props.children}
             </div>
             <div className="general-list-pagination" key={"pagination"}>

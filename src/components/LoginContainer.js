@@ -31,6 +31,7 @@ const LoginContainer = ({set_user_found})=>{
                     localStorage.setItem('token',user_data.token);
                     localStorage.setItem('user',JSON.stringify(user_data.data.user));
                     set_user_found(user_data.data.user);
+                    dispatch_load_obj(['idle']);
                 }
                 else if(response.status == 401){
                     dispatch_load_obj(['info','Wrong Credentials !!!']);
