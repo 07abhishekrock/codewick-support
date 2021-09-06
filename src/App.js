@@ -123,7 +123,7 @@ function App() {
         <Router>
         <UserContext.Provider value={[user_found , set_user_found]}>
           <LoadingContext.Provider value={[load_object , dispatch_load_object]}>
-          <LoadingModal {...[load_object , dispatch_load_object]}/>
+          <LoadingModal {...{load_object , dispatch_load_object}}/>
             <Switch>
               <Route exact path="/login">
                 {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found}}/> : <Redirect to="/"></Redirect>}
