@@ -2,8 +2,7 @@ import { useFormik } from "formik";
 import { useContext } from "react/cjs/react.development";
 import * as yup from 'yup';
 import { LoadingContext } from "../utils/contexts";
-const LoginContainer = ({set_user_found})=>{
-    const [,dispatch_load_obj] = useContext(LoadingContext);
+const LoginContainer = ({set_user_found , dispatch_load_obj})=>{
     const login_form = useFormik({
         initialValues : {
             email : '',

@@ -126,10 +126,10 @@ function App() {
           <LoadingModal {...{load_object , dispatch_load_object}}/>
             <Switch>
               <Route exact path="/login">
-                {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found}}/> : <Redirect to="/"></Redirect>}
+                {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found , dispatch_load_object}}/> : <Redirect to="/"></Redirect>}
               </Route>
               <Route path="/">
-                {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found}}/> : <>
+                {!(user_found && user_found._id) ? <LoginContainer {...{set_user_found , dispatch_load_object}}/> : <>
                 <NavbarWithSearch/>
                 <Route exact path="/">
                   <HomePageGrid user={user_found}>
