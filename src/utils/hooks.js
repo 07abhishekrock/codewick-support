@@ -74,7 +74,7 @@ export const useLoggedOutAlert = ()=>{
             }])
         }
         else{
-            dispatch_load_object(['info','Some Error Occurred']);
+            dispatch_load_object(['info',error_obj.message]);
         }
     }
 }

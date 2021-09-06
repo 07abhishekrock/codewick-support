@@ -79,13 +79,13 @@ function IssuesPage({ createdByUserId, assignedByUserId }) {
         },
         project_id === undefined ? null : project_id
         , !project_id || user_object.role !== 'admin' ? null : true)
-        useFetch('https://api-redmine.herokuapp.com/api/v1/project/my-project/' + project_id, 'GET', true, {},
+        useFetch('https://api-redmine.herokuapp.com/api/v1/project/my-project?_id=' + project_id, 'GET', true, {},
         () => {
             console.log('loading single project');
             dispatch_load_obj(['load', 'Adding Projects...'])
         },
         (data) => {
-            set_current_project_data(data.data.data);
+            set_current_project_data(data.data.data[0]);
             dispatch_load_obj(['idle']);
         },
         (error) => {
