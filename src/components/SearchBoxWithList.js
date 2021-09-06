@@ -104,6 +104,7 @@ function SearchBoxWithList({
                         </div>
                     )
                 })}
+                {!loading && search_list.length === 0 ? <h1>No Results Found</h1> : null}
             </div>
         </div>
         <h3>{added_list_heading || 'Added Items'}</h3>

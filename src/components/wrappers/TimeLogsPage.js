@@ -35,7 +35,7 @@ export default function TimeLogsPage() {
             <div className="project-heading">
                 <h1>{issue_data.project && issue_data.project.title || 'N/A'} / Time Logs</h1>
                 <span>Time Logs for #{issue_data.counter || 'N/A'}</span>
-                <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button>
+                {current_user.role !== 'customer' ? <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button> : null}
             </div>
             {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log} 
             updateLogsList={(new_log_object)=>{

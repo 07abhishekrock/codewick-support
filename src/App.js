@@ -1,5 +1,5 @@
 import NavbarWithSearch from './components/Navbar';
-import ProjectWindowWithBackground, { ProjectPageContext } from './components/ProjectWindowBackground';
+import ProjectWindowWithBackground from './components/ProjectWindowBackground';
 import './styles/main.scss';
 import { BrowserRouter as Router , Redirect, Route , Switch } from 'react-router-dom';
 import { useEffect , useState , useReducer } from 'react';
@@ -91,8 +91,6 @@ function App() {
         const user = JSON.parse(localStorage.getItem('user'));
         console.log('made response with success');
         if(token && user._id){
-          console.log('hello world');
-          // dispatch_load_object(['load','Loading User']);
           const response = await fetch('https://api-redmine.herokuapp.com/api/v1/user/' + user._id , {
             headers : {
               'Authorization' : 'Bearer ' + localStorage.getItem('token')

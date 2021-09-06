@@ -1,5 +1,5 @@
 import { useFormik } from "formik"
-// import * as yup from 'yup';
+import { returnStatusFromCode } from "../IssueContainer";
 import ReactQuill from "react-quill";
 import React, { useContext, useState } from "react"
 import { GeneralBoxWrapper } from "../GeneralList"
@@ -18,6 +18,7 @@ import DeleteModal from "../DeleteModal";
 const getDateStringForInputBox = (date)=>{
     try{
         const date_obj = new Date(date);
+        console.log(date_obj);
         return date_obj.toISOString().substr(0, 10);
     }
     catch(e){
@@ -30,6 +31,9 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
     const [user_object] = useContext(UserContext);
     const logged_out_dialog = useLoggedOutAlert();
     const history = useHistory();
+    const isNonCustomer = ()=>{
+        return user_object.role === 'customer';
+    }
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -94,8 +98,27 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             }
         }]);
     })
-    return (
-        <>
+    return  user_object.role === 'customer' ? <>
+            <h3 className="box-heading">ISSUE TITLE</h3>
+            <h1 className="main-heading">{issue_data.title || 'No Title Provided'}</h1>
+            <h3 className="box-heading">ISSUE DESCRIPTION</h3>
+            <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div>
+            <h3 className="box-heading">ISSUE DETAILS</h3>
+            <div className="peek-grid">
+                <FancyPeekElement option="Tracker" value={issue_data.tracker} tracker_type={issue_data.tracker === 'feature' ? "0" : "1"}/>
+                <FancyPeekElement option="Status" value={issue_data.status} status_type={returnStatusFromCode(issue_data.status)}/>
+                <FancyPeekElement option="Priority" value={issue_data.priority} priority_type={issue_data.priority === 'normal' ? "0" : "1"}/>
+                <FancyPeekElement option="Target Version" value={issue_data.target || 'no version'}/>
+                <FancyPeekElement option="Assigner" value={(issue_data.assignee && issue_data.assignee.name) ? <a>{issue_data.assignee.name}</a> : 'N/A'}/>
+                <FancyPeekElement option="Reviewer" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
+                <FancyPeekElement option="Start Date" value={getDateStringForInputBox(form_data.values.startDate) || 'N/A'}/>
+                <FancyPeekElement option="End Date" value={getDateStringForInputBox(form_data.values.endDate) || 'N/A'}/>
+                <FancyPeekElement option="% Done" value={<ProgressBar value={issue_data.percentageDone}/>}/>
+                <FancyPeekElement option="Time Spent" value={(issue_data.timeSpent || '0')+" Hrs"}/>
+            </div> 
+            <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
+        </>
+        :<>
             <h3 className="box-heading">Edit Issue</h3>
             <form className="edit-issue-form" onSubmit={(e)=>{
                 e.preventDefault();
@@ -190,7 +213,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     <label>% Done</label>
                     <input type="number" min="0" max="100" {...form_data.getFieldProps('percentageDone')}/>
                 </div>
-                {user_object.role !== 'customer' ? <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link> : null}
+                <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
                 <code style={{width:'100%'}}>
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>
@@ -231,30 +254,30 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 <button>Update Form</button>
             </form>
         </>
+    
+}
+
+const FancyPeekElement = ({option , value , color , status_type , priority_type , tracker_type})=>{
+    return (
+        <div className="fancy-peek-element" style={{color}}>
+            <span>{option}</span>
+            <div
+                {
+                    ...{
+                        status_type , priority_type , tracker_type
+                    }
+                } 
+
+            >{value}</div>
+        </div>
     )
 }
 
-// const FancyPeekElement = ({option , value , color , status_type , priority_type , tracker_type})=>{
-//     return (
-//         <div className="fancy-peek-element" style={{color}}>
-//             <span>{option}</span>
-//             <div
-//                 {
-//                     ...{
-//                         status_type , priority_type , tracker_type
-//                     }
-//                 } 
-
-//             >{value}</div>
-//         </div>
-//     )
-// }
-
-// const ProgressBar = ({value})=>{
-//     return <span className="inline-progress-bar">
-//         <i style={{width:`${value}%`}}></i>
-//     </span>
-// }
+const ProgressBar = ({value})=>{
+    return <span className="inline-progress-bar">
+        <i style={{width:`${value}%`}}></i>
+    </span>
+}
 
 const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
     const [,dispatch_load_object] = useContext(LoadingContext);
@@ -421,7 +444,7 @@ const SingleIssuePage = ()=>{
             <div className="project-heading">
                 <h1>Issue {issue_data.counter}</h1>
                 <span>Created By {issue_data.createdBy && issue_data.createdBy.name}</span>
-                <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button>
+                {user_object.role === 'customer' ? <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button> : null}
             </div>
             {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log}/> : false}
             <GeneralBoxWrapper width={'1200px'}>
@@ -430,19 +453,6 @@ const SingleIssuePage = ()=>{
                 <h3 className="box-heading">ISSUE DESCRIPTION</h3>
                 <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div> */}
                 <EditIssueSection {...{issue_data , set_issue_data}}/>
-                {/* <h3 className="box-heading">ISSUE DETAILS</h3>
-                <div className="peek-grid">
-                    <FancyPeekElement option="Tracker" value={issue_data.tracker} tracker_type={issue_data.tracker === 'feature' ? "0" : "1"}/>
-                    <FancyPeekElement option="Status" value={issue_data.status} status_type={returnStatusFromCode(issue_data.status)}/>
-                    <FancyPeekElement option="Priority" value={issue_data.priority} priority_type={issue_data.priority === 'normal' ? "0" : "1"}/>
-                    <FancyPeekElement option="Target Version" value={issue_data.version || 'no version'}/>
-                    <FancyPeekElement option="Assigner" value={issue_data.assignee && issue_data.assignee.name}/>
-                    <FancyPeekElement option="Reviewer" value={issue_data.reviewer && issue_data.reviewer.name}/>
-                    <FancyPeekElement option="Start Date" value="23 Aug 2021"/>
-                    <FancyPeekElement option="End Date" value="23 Sep 2021"/>
-                    <FancyPeekElement option="% Done" value={<ProgressBar value={issue_data.donePercentage}/>}/>
-                    <FancyPeekElement option="Time Spent" value="3 Hrs"/>
-                </div> */}
                 <UpdatesWrapper all_selections={all_selections} notes={notes} set_notes={set_notes} issue_id={issue_data._id || null}/>
             </GeneralBoxWrapper>
         </>
