@@ -57,7 +57,7 @@ export const TimeLogSingle = ({
                     <h3><a>{user.name}</a> worked on Issue #{issue.counter} on <a>{(new Date(createdAt)).toLocaleDateString('en-GB')}</a></h3>
                     <p>{issue.title}</p>
                     <div className="comment">
-                        {comment}
+                        {comment || 'No Comment Found'}
                     </div>
                 </div>
                 {isDeletable ? 

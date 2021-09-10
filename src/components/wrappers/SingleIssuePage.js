@@ -31,6 +31,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
     const [user_object] = useContext(UserContext);
     const logged_out_dialog = useLoggedOutAlert();
     const history = useHistory();
+    const [edit_note_is_visible , set_edit_section_visibility] = useState(false);
     const isNonCustomer = ()=>{
         return user_object.role === 'customer';
     }
@@ -98,28 +99,34 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             }
         }]);
     })
-    return  user_object.role === 'customer' ? <>
+    return  <>
             <h3 className="box-heading">ISSUE TITLE</h3>
             <h1 className="main-heading">{issue_data.title || 'No Title Provided'}</h1>
             <h3 className="box-heading">ISSUE DESCRIPTION</h3>
             <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div>
             <h3 className="box-heading">ISSUE DETAILS</h3>
             <div className="peek-grid">
+                <FancyPeekElement option="Project" value={<Link to={"/project/"+issue_data.project?._id+"/overview"}>{issue_data.project && issue_data.project.title}</Link>}/>
                 <FancyPeekElement option="Tracker" value={issue_data.tracker} tracker_type={issue_data.tracker === 'feature' ? "0" : "1"}/>
                 <FancyPeekElement option="Status" value={issue_data.status} status_type={returnStatusFromCode(issue_data.status)}/>
                 <FancyPeekElement option="Priority" value={issue_data.priority} priority_type={issue_data.priority === 'normal' ? "0" : "1"}/>
                 <FancyPeekElement option="Target Version" value={issue_data.target || 'no version'}/>
                 <FancyPeekElement option="Assigner" value={(issue_data.assignee && issue_data.assignee.name) ? <a>{issue_data.assignee.name}</a> : 'N/A'}/>
-                <FancyPeekElement option="Reviewer" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
+                <FancyPeekElement option="Reviewee" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
                 <FancyPeekElement option="Start Date" value={getDateStringForInputBox(form_data.values.startDate) || 'N/A'}/>
                 <FancyPeekElement option="End Date" value={getDateStringForInputBox(form_data.values.endDate) || 'N/A'}/>
                 <FancyPeekElement option="% Done" value={<ProgressBar value={issue_data.percentageDone}/>}/>
                 <FancyPeekElement option="Time Spent" value={(issue_data.timeSpent || '0')+" Hrs"}/>
             </div> 
             <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
-        </>
-        :<>
-            <h3 className="box-heading">Edit Issue</h3>
+
+            {user_object.role !== 'customer' ? <div className="tabs-wrapper">
+                <input type="checkbox" name="edit-note-tab" id="edit-note-section" checked={edit_note_is_visible} value="0" style={{display:'none'}} onChange={()=>{
+                    set_edit_section_visibility(!edit_note_is_visible);
+                }}/>
+                <label className="box-heading" htmlFor="edit-note-section">Edit Note</label>
+            </div> : null}
+            {edit_note_is_visible && user_object.role !== 'customer' ? 
             <form className="edit-issue-form" onSubmit={(e)=>{
                 e.preventDefault();
                 form_data.submitForm();
@@ -213,7 +220,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     <label>% Done</label>
                     <input type="number" min="0" max="100" {...form_data.getFieldProps('percentageDone')}/>
                 </div>
-                <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
                 <code style={{width:'100%'}}>
                     {/* {JSON.stringify(form_data.values)} */}
                 </code>
@@ -253,6 +259,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 }}/> : null}
                 <button>Update Form</button>
             </form>
+        : null }
         </>
     
 }
@@ -444,7 +451,7 @@ const SingleIssuePage = ()=>{
             <div className="project-heading">
                 <h1>Issue {issue_data.counter}</h1>
                 <span>Created By {issue_data.createdBy && issue_data.createdBy.name}</span>
-                {user_object.role === 'customer' ? <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button> : null}
+                {user_object.role !== 'customer' ? <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button> : null}
             </div>
             {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log}/> : false}
             <GeneralBoxWrapper width={'1200px'}>

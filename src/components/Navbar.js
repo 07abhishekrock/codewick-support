@@ -36,6 +36,9 @@ const NavbarWithSearch = ()=>{
         if(includesBind('admin')){
             set_currently_selected(5);
         }
+        if(includesBind('user','profile','update-all-users')){
+            set_currently_selected(7);
+        }
     },[routes_array])
 
     const search_bar_ref = useRef(null);
@@ -62,6 +65,7 @@ const NavbarWithSearch = ()=>{
                         <Link select={current_selected === 4 ? "1" : "0"} to="/help">Help</Link>
                         {user_object.role === 'admin' ? <Link select={current_selected === 5 ? "1" : "0"} to="/admin">Admin</Link> : null}
                         <Link select={current_selected === 6 ? "1" : "0"} to="/issues">Issues</Link>
+                        <Link select={current_selected === 7 ? "1" : "0"} to="/profile">Profile</Link>
                         <a onClick={(e)=>{
                             setVisible((visible + 1) % 2);
                         }}

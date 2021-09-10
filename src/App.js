@@ -136,7 +136,13 @@ function App() {
                   </HomePageGrid>
                 </Route>
                 <Route exact path="/profile">
+                  <UserProfilePage self_profile/>
+                </Route>
+                <Route exact path="/user/:user_id">
                   <UserProfilePage/>
+                </Route>
+                <Route exact path="/update-all-users">
+                  <UserProfilePage all_users/>
                 </Route>
                 <Route exact path="/projects">
                   <ProjectWindowWithBackground>

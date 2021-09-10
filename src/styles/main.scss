@@ -14,6 +14,10 @@ body , html{
     padding:0px;
 }
 
+div.update-all-users-wrapper{
+    padding:1.5em;
+}
+
 .box-heading{
     padding:0.3em 0.5em;
     display:block;
@@ -115,4 +119,14 @@ div.modal-wrapper{
             }
         }
     }
+}
+
+
+h1.soft-heading{
+    background-color:variables.$primary_color;
+    color:white;
+    text-align:center;
+    font-size:2em;
+    margin-top:0px;
+    padding:1.5em 0px;
 }

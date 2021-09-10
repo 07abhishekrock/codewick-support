@@ -343,6 +343,210 @@ function CreateNewProject(){
     )
 }
 
+function SendMail(){
+    const [,dispatch_load_obj] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
+    const send_mail_form = useFormik({
+        initialValues : {
+            to : "",
+            email : "",
+            subject : "",
+            template : "None"
+        },
+        validationSchema : yup.object({
+            to : yup.string().required(),
+            email : yup.string().required().email(),
+            subject : yup.string().required(),
+            template : yup.string().required().oneOf(['password-reset','account-block'])
+        }),
+        onSubmit : async ({to , email , subject , template})=>{
+            try{
+                // const project_body = {
+                //     title,
+                //     user : members.map(member => member._id), 
+                //     manager : members.filter(member => member.status === 'manager').map(manager => manager._id),
+                //     description,
+                //     totalFeature : 0,
+                //     totalBug : 0
+                // }
+                // dispatch_load_obj(['load' , '']);
+                // const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
+                //     method  : 'POST',
+                //     body : JSON.stringify(project_body),
+                //     headers : {
+                //         'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                //         'Content-Type' : "application/json"
+                //     }
+                // })
+                // if(response.ok){
+                //     project_form.resetForm();
+                //     dispatch_load_obj(['info','Project Created Succesfully']);
+                // }
+                // else{
+                //     await logged_out_dialog(response);
+                // }
+            }
+            catch(e){
+                // dispatch_load_obj(['info','Some Error Occurred']);
+            }
+        }
+    });
+    return (
+        <form className="modal-form" onSubmit={(e)=>{
+            e.preventDefault();
+            send_mail_form.submitForm();
+        }}>
+            <h3>Send New Mail</h3>
+            <div className="input-group single-column">
+                <label htmlFor="mail-to">To</label>
+                <input id="mail-to" type="text" {...send_mail_form.getFieldProps('to')}/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="mail-email">Project Description</label>
+                <input id="mail-email" {...send_mail_form.getFieldProps('description')} type="text"/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="mail-subject">Subject</label>
+                <textarea id="mail-subject" {...send_mail_form.getFieldProps('subject')}></textarea>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="mail-subject">Template</label>
+                <select id="mail-template" {...send_mail_form.getFieldProps('template')}>
+                    <option value="None">Select Template</option>
+                    <option value="password-reset">Password Reset</option>
+                    <option value="account-reset">Account Reset</option>
+                    <option value="new-account">New Account</option>
+                </select>
+            </div>
+            <div className="error-div">
+                {send_mail_form.errors.to ? <i className="error">{send_mail_form.errors.to}</i> : null}
+                {send_mail_form.errors.email ? <i className="error">{send_mail_form.errors.email}</i> : null}
+                {send_mail_form.errors.subject ? <i className="error">{send_mail_form.errors.subject}</i> : null}
+                {send_mail_form.errors.template ? <i className="error">{send_mail_form.errors.template}</i> : null}
+            </div>
+            <div className="btn-group">
+                <button>Send Mail</button>
+            </div>
+        </form>
+    )
+}
+
+function SendInvoice(){
+    const [,dispatch_load_obj] = useContext(LoadingContext);
+    const logged_out_dialog = useLoggedOutAlert();
+    const [current_user , set_current_user] = useState({});
+    const send_invoice_form = useFormik({
+        initialValues : {
+            invoice_no : "",
+            title : "",
+            description : "",
+            amount : "",
+            paymentLink : "",
+            username : ""
+        },
+        validationSchema : yup.object({
+            invoice_no : yup.number().required(),
+            title : yup.string().required(),
+            description : yup.string().required(),
+            amount : yup.number().required(),
+            paymentLink : yup.string().required().url(),
+            username : yup.string().required()
+        }),
+        onSubmit : async ({invoice_no , title , description , amount , paymentLink})=>{
+            try{
+                // const project_body = {
+                //     title,
+                //     user : members.map(member => member._id), 
+                //     manager : members.filter(member => member.status === 'manager').map(manager => manager._id),
+                //     description,
+                //     totalFeature : 0,
+                //     totalBug : 0
+                // }
+                // dispatch_load_obj(['load' , '']);
+                // const response = await fetch('https://api-redmine.herokuapp.com/api/v1/project',{
+                //     method  : 'POST',
+                //     body : JSON.stringify(project_body),
+                //     headers : {
+                //         'Authorization' : 'Bearer ' + localStorage.getItem('token'),
+                //         'Content-Type' : "application/json"
+                //     }
+                // })
+                // if(response.ok){
+                //     project_form.resetForm();
+                //     dispatch_load_obj(['info','Project Created Succesfully']);
+                // }
+                // else{
+                //     await logged_out_dialog(response);
+                // }
+            }
+            catch(e){
+                // dispatch_load_obj(['info','Some Error Occurred']);
+            }
+        }
+    });
+    return (
+        <form className="modal-form" onSubmit={(e)=>{
+            e.preventDefault();
+            send_invoice_form.submitForm();
+        }}>
+            <h3>Send Invoice</h3>
+            <div className="input-group single-column">
+                <label htmlFor="invoice-no">Invoice Number</label>
+                <input id="invoice-no" type="text" {...send_invoice_form.getFieldProps('invoice-no')}/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="invoice-title">Title</label>
+                <input id="invoice-title" {...send_invoice_form.getFieldProps('invoice-title')} type="text"/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="invoice-description">Description</label>
+                <textarea id="invoice-description" {...send_invoice_form.getFieldProps('description')}></textarea>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="invoice-amount">Amount</label>
+                <input type="text" id="invoice-amount" {...send_invoice_form.getFieldProps('amount')}/>
+            </div>
+            <div className="input-group single-column">
+                <label htmlFor="select-customer">Select Customer</label>
+                <SearchBoxWithList 
+                    identifier = "customer-selected"
+                    added_list_heading = "Selected Customer"
+                    nameAttribute = "name"
+                    searchURLGenerator = {keyword=>{
+                        return `https://api-redmine.herokuapp.com/api/v1/user?name[$regex]=^${keyword}&name[$options]=i&limit=6&role=customer`
+                    }}
+                    getDataFromResponse = {data => data.data.data}
+                    selectItem = {(user)=>{
+                        set_current_user(user);
+                        send_invoice_form.setFieldValue('username' , user.name);
+                    }}
+                    isSelected = {(user)=>current_user._id === user._id}
+                    selectedItems = {current_user._id ? [current_user] : []}
+                    operationsOnItems = {[
+                        {
+                            label : 'Drop Selection',
+                            onClick : ()=>{
+                                set_current_user({});
+                            },
+                            isEnabled : ()=>true
+                        }
+                    ]}
+                />  
+            </div>
+            <div className="error-div">
+                {send_invoice_form.errors.title ? <i className="error">{send_invoice_form.errors.title}</i> : null}
+                {send_invoice_form.errors.description ? <i className="error">{send_invoice_form.errors.description}</i> : null}
+                {send_invoice_form.errors.amount ? <i className="error">{send_invoice_form.errors.amount}</i> : null}
+                {send_invoice_form.errors.invoice_no ? <i className="error">{send_invoice_form.errors.invoice_no}</i> : null}
+                {send_invoice_form.errors.username ? <i className="error">{send_invoice_form.errors.username}</i> : null}
+            </div>
+            <div className="btn-group">
+                <button>Send Invoice</button>
+            </div>
+        </form>
+    )   
+}
+
 function CreateNewUser(){
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const logged_out_dialog = useLoggedOutAlert();
@@ -433,7 +637,9 @@ function AdminPageWrapper() {
     const options = [
         'Create a New Project',
         'Create a New User',
-        'Update Project'
+        'Send Mail',
+        'Update Project',
+        'Send Invoice'
     ]
     return (
         <div className="admin-page-wrapper">
@@ -456,7 +662,9 @@ function AdminPageWrapper() {
             <div className="admin-page-modal-wrapper">
                 {current_selected_form === 0 ? <CreateNewProject/> : null}
                 {current_selected_form === 1 ? <CreateNewUser/> : null}
-                {current_selected_form === 2 ? <UpdateProject/> : null}
+                {current_selected_form === 2 ? <SendMail/> : null}
+                {current_selected_form === 3 ? <UpdateProject/> : null}
+                {current_selected_form === 4 ? <SendInvoice/> : null}
             </div>
         </div>
     )
