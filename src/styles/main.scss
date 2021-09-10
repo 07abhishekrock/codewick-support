@@ -39,6 +39,31 @@ div.modal-wrapper{
     z-index:99!important;
     &.loading-wrapper{
         z-index:100!important;
+        width:100%;
+        &[info="1"]{
+            height:auto;
+            top:0px;
+            left:0px;
+            inset:initial;
+            animation:fade_into 0.3s 2s ease-in both;
+            box-shadow:0px 6px 0px 5px rgba(0,0,0,0.05);
+            font-size:0.8em;
+            @keyframes fade_into{
+                from{
+                    transform:translateY(0px);
+                }
+                to{
+                    transform:translateY(-100%);
+                }
+            }
+            &>div.loading-modal{
+                width:100%;
+                display:flex;
+                flex-flow:row;
+                justify-content: space-between;
+                border-radius:0px 0px 0.5em 0.5em;
+            }
+        }
     }
     overflow:auto;
     inset:0px;

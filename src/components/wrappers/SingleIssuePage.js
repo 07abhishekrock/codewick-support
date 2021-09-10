@@ -34,7 +34,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
     const [user_object] = useContext(UserContext);
     const logged_out_dialog = useLoggedOutAlert();
     const history = useHistory();
-    const [edit_note_is_visible , set_edit_section_visibility] = useState(false);
+    const [edit_issue_is_visible , set_edit_section_visibility] = useState(false);
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -129,12 +129,12 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             <Link className={"special-link"} to={`./${issue_id}/time_entries`}>Time Logs Data <FontAwesomeIcon icon={faExternalLinkSquareAlt}/></Link>
 
             {user_object.role !== 'customer' ? <div className="tabs-wrapper">
-                <input type="checkbox" name="edit-note-tab" id="edit-note-section" checked={edit_note_is_visible} value="0" style={{display:'none'}} onChange={()=>{
-                    set_edit_section_visibility(!edit_note_is_visible);
+                <input type="checkbox" name="edit-issue-tab" id="edit-issue-section" checked={edit_issue_is_visible} value="0" style={{display:'none'}} onChange={()=>{
+                    set_edit_section_visibility(!edit_issue_is_visible);
                 }}/>
-                <label className="box-heading" htmlFor="edit-note-section">Edit Note</label>
+                <label className="box-heading" htmlFor="edit-issue-section">Edit Issue</label>
             </div> : null}
-            {edit_note_is_visible && user_object.role !== 'customer' ? 
+            {edit_issue_is_visible && user_object.role !== 'customer' ? 
             <form className="edit-issue-form" onSubmit={(e)=>{
                 e.preventDefault();
                 form_data.submitForm();
@@ -376,7 +376,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
         updatedAt : new Date(),
         user : current_user_obj
     }
-    const [current_selection , set_current_selection] = useState(-1);
+    const [current_selection , set_current_selection] = useState(all_selections[0].index || 0);
     return (
         <>
             <div className="tabs-wrapper">
@@ -403,6 +403,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                         <EditorWithUpdate btnText={"Add Note"} updateFunction={upsertList} note_obj={new_note_obj} issue={issue_id}/>
                     </SingleNoteItem>
                 </div> : null}  
+                {current_selection === 1 ? <h2>Feedback Coming Soon !!!</h2> : null}
             </div>
         </>
     )
@@ -463,10 +464,6 @@ const SingleIssuePage = ()=>{
             </div>
             {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log}/> : false}
             <GeneralBoxWrapper width={'1200px'}>
-                {/* <h3 className="box-heading">ISSUE TITLE</h3>
-                <h1 className="main-heading">{issue_data.title || 'No Title Provided'}</h1>
-                <h3 className="box-heading">ISSUE DESCRIPTION</h3>
-                <div className="para-desc" dangerouslySetInnerHTML={{__html : issue_data.description}}></div> */}
                 <EditIssueSection {...{issue_data , set_issue_data}}/>
                 <UpdatesWrapper all_selections={all_selections} notes={notes} set_notes={set_notes} issue_id={issue_data._id || null}/>
             </GeneralBoxWrapper>
