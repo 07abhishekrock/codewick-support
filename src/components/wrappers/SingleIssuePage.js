@@ -120,7 +120,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 <FancyPeekElement option="Priority" value={issue_data.priority} priority_type={issue_data.priority === 'normal' ? "0" : "1"}/>
                 <FancyPeekElement option="Target Version" value={issue_data.target || 'no version'}/>
                 <FancyPeekElement option="Assignee" value={(issue_data.assignee && issue_data.assignee.name) ? <a>{issue_data.assignee.name}</a> : 'N/A'}/>
-                <FancyPeekElement option="Reviewee" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
+                <FancyPeekElement option="Reviewer" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
                 <FancyPeekElement option="Start Date" value={getDateStringForInputBox(form_data.values.startDate) || 'N/A'}/>
                 <FancyPeekElement option="End Date" value={getDateStringForInputBox(form_data.values.endDate) || 'N/A'}/>
                 <FancyPeekElement option="% Done" value={<ProgressBar value={issue_data.percentageDone}/>}/>
