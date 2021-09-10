@@ -17,6 +17,9 @@ import DeleteModal from "../DeleteModal";
 
 const getDateStringForInputBox = (date)=>{
     try{
+        if(!date){
+            return '';
+        }
         const date_obj = new Date(date);
         console.log(date_obj);
         return date_obj.toISOString().substr(0, 10);
@@ -32,9 +35,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
     const logged_out_dialog = useLoggedOutAlert();
     const history = useHistory();
     const [edit_note_is_visible , set_edit_section_visibility] = useState(false);
-    const isNonCustomer = ()=>{
-        return user_object.role === 'customer';
-    }
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -54,6 +54,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
         onSubmit : async (values)=>{
             try{
                 dispatch_load_obj(['load' , 'Updating Issue']);
+                console.log(values);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , {
                     method : 'PATCH',
                     body : JSON.stringify({...values , assignee : values.assignee === 'None' ? null : values.assignee , 
@@ -118,7 +119,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 <FancyPeekElement option="Status" value={issue_data.status} status_type={returnStatusFromCode(issue_data.status)}/>
                 <FancyPeekElement option="Priority" value={issue_data.priority} priority_type={issue_data.priority === 'normal' ? "0" : "1"}/>
                 <FancyPeekElement option="Target Version" value={issue_data.target || 'no version'}/>
-                <FancyPeekElement option="Assigner" value={(issue_data.assignee && issue_data.assignee.name) ? <a>{issue_data.assignee.name}</a> : 'N/A'}/>
+                <FancyPeekElement option="Assignee" value={(issue_data.assignee && issue_data.assignee.name) ? <a>{issue_data.assignee.name}</a> : 'N/A'}/>
                 <FancyPeekElement option="Reviewee" value={(issue_data.reviewer && issue_data.reviewer.name) ? <a>{issue_data.reviewer.name}</a> : 'N/A'}/>
                 <FancyPeekElement option="Start Date" value={getDateStringForInputBox(form_data.values.startDate) || 'N/A'}/>
                 <FancyPeekElement option="End Date" value={getDateStringForInputBox(form_data.values.endDate) || 'N/A'}/>
