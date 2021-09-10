@@ -21,7 +21,6 @@ const getDateStringForInputBox = (date)=>{
             return '';
         }
         const date_obj = new Date(date);
-        console.log(date_obj);
         return date_obj.toISOString().substr(0, 10);
     }
     catch(e){
@@ -54,7 +53,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
         onSubmit : async (values)=>{
             try{
                 dispatch_load_obj(['load' , 'Updating Issue']);
-                console.log(values);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , {
                     method : 'PATCH',
                     body : JSON.stringify({...values , assignee : values.assignee === 'None' ? null : values.assignee , 
@@ -65,14 +63,11 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     }
                 })
                 if(response.ok){
-                    dispatch_load_obj(['error',{
-                        error : 'Issue Updated',
-                        onRetry : null,
-                        buttonText : 'Got It',
-                        buttonCallback : ()=>{
-                            window.location.reload();
-                        }
-                    }]);
+                    dispatch_load_obj(['info', 'Issue Updated Succesfully']);
+                    set_issue_data({...values,
+                        assignee : issue_data.project.user.filter((user)=>user._id === values.assignee)[0],
+                        reviewer : issue_data.project.user.filter((user)=>user._id === values.reviewer)[0]
+                    });
                 }
                 else{
                     await logged_out_dialog(response);
@@ -415,7 +410,6 @@ const SingleIssuePage = ()=>{
     const [create_log , show_create_log] = useState(false);
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const [user_object] = useContext(UserContext);
-    console.log('role is' , user_object.role === 'customer');
     useFetch('https://api-redmine.herokuapp.com/api/v1/notes?issue=' + issue_data._id , 'GET' , true , {} , 
     ()=>{
         dispatch_load_obj(['load','Loading Notes'])
