@@ -10,7 +10,7 @@ function LoadingModal({load_object : {
     buttonText,
     buttonCallback
 }, dispatch_load_object : dispatch_load_obj}) {
-    console.log(buttonText , buttonCallback);
+    console.log('loading is' , loading);
     return (loading !== 'idle' || error || loading === 'info' ? <div className="modal-wrapper loading-wrapper" info={loading === 'info' ? "1" : "0"}>
             <div className="loading-modal" error = {error ? "1" : "0"} info={loading === 'info' ? "1" : "0"} load={loading === 'load' ? "1" : "0"}>
                 {error && !buttonText ? <FontAwesomeIcon icon={faTimesCircle}/> : null}
