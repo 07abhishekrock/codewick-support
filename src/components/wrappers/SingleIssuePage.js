@@ -456,7 +456,14 @@ const SingleIssuePage = ()=>{
                 <span>Created By {issue_data.createdBy && issue_data.createdBy.name}</span>
                 {user_object.role !== 'customer' ? <button onClick={() => show_create_log(true)}>Add Time Log &nbsp;<FontAwesomeIcon icon={faPlusCircle}/></button> : null}
             </div>
-            {create_log ? <CreateTimeLogForm issue_id={issue_data._id} project_id={issue_data.project && issue_data.project._id} show_create_log={show_create_log}/> : false}
+            {create_log ? <CreateTimeLogForm 
+                issue_id={issue_data._id} 
+                project_id={issue_data.project && issue_data.project._id} 
+                show_create_log={show_create_log} 
+                change_in_main_issue={(new_time_spent)=>{
+                    set_issue_data({...issue_data , timeSpent : (Number(new_time_spent) + Number(issue_data.timeSpent || 0)).toFixed(1)})
+                }}
+            /> : false}
             <GeneralBoxWrapper width={'1200px'}>
                 <EditIssueSection {...{issue_data , set_issue_data}}/>
                 <UpdatesWrapper all_selections={all_selections} notes={notes} set_notes={set_notes} issue_id={issue_data._id || null}/>

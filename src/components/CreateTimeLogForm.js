@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import { LoadingContext, UserContext } from '../utils/contexts';
 import { useLoggedOutAlert } from '../utils/hooks';
 
-function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogsList}) {
+function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogsList , change_in_main_issue}) {
     const [,dispatch_load_obj] = useContext(LoadingContext);
     const [user_object] = useContext(UserContext);
     const logged_out_dialog = useLoggedOutAlert();
@@ -44,6 +44,9 @@ function CreateTimeLogForm({show_create_log , issue_id , project_id , updateLogs
                     const data = await response.json();
                     if(updateLogsList){
                         updateLogsList(data.data.data);
+                    }
+                    if(change_in_main_issue){
+                        change_in_main_issue(data.data.data.hours);
                     }
                     dispatch_load_obj(['info','Time Logged Succesfully']);
                 }
