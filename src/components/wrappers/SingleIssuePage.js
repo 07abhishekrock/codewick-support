@@ -64,7 +64,14 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     }
                 })
                 if(response.ok){
-                    dispatch_load_obj(['info', 'Issue Updated Succesfully']);
+                    dispatch_load_obj(['error',{
+                        error : 'Issue Updated',
+                        onRetry : null,
+                        buttonText : 'Got It',
+                        buttonCallback : ()=>{
+                            window.location.reload();
+                        }
+                    }]);
                 }
                 else{
                     await logged_out_dialog(response);
