@@ -14,6 +14,7 @@ import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-s
 import CreateTimeLogForm from "../CreateTimeLogForm";
 import { Link } from "react-router-dom";
 import DeleteModal from "../DeleteModal";
+import { removeUnwantedNewLines } from "../../utils/functions";
 
 const getDateStringForInputBox = (date)=>{
     try{
@@ -34,6 +35,7 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
     const logged_out_dialog = useLoggedOutAlert();
     const history = useHistory();
     const [edit_issue_is_visible , set_edit_section_visibility] = useState(false);
+    //form data initialisation for edit issue --------------------------------------------
     const form_data = useFormik({
         initialValues : {
             _id : '123',
@@ -55,8 +57,13 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                 dispatch_load_obj(['load' , 'Updating Issue']);
                 const response = await fetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , {
                     method : 'PATCH',
-                    body : JSON.stringify({...values , assignee : values.assignee === 'None' ? null : values.assignee , 
-                    reviewer : values.reviewer === 'None' ? null : values.reviewer}),
+                    body : JSON.stringify(
+                        {
+                            ...values , 
+                                assignee : values.assignee === 'None' ? null : values.assignee , 
+                                reviewer : values.reviewer === 'None' ? null : values.reviewer,
+                                description : removeUnwantedNewLines(values.description)
+                        }),
                     headers : {
                         "Content-Type" : 'application/json',
                         "Authorization" : "Bearer " + localStorage.getItem('token')
@@ -66,7 +73,8 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     dispatch_load_obj(['info', 'Issue Updated Succesfully']);
                     set_issue_data({...values,
                         assignee : issue_data.project.user.filter((user)=>user._id === values.assignee)[0],
-                        reviewer : issue_data.project.user.filter((user)=>user._id === values.reviewer)[0]
+                        reviewer : issue_data.project.user.filter((user)=>user._id === values.reviewer)[0],
+                        description : removeUnwantedNewLines(values.description)
                     });
                 }
                 else{
@@ -78,9 +86,17 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             }
         }
     });
+    //form data initialisation ends here -------------------------------------------------
     const [,dispatch_load_obj] = useContext(LoadingContext);
 
+    
+    
+    
+    
+    
     const {issue_id} = useParams();
+
+    //fetching initial issue data ---------------------------------------------------------
     useFetch('https://api-redmine.herokuapp.com/api/v1/issue/' + issue_id , 'GET' , true , {} ,
     ()=>{
         dispatch_load_obj(['load' , 'Getting Your Issue']);
@@ -102,6 +118,12 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
             }
         }]);
     })
+
+    //initial fetch ends here ------------------------------------------------------------------------------
+
+
+
+
     return  <>
             <h3 className="box-heading">ISSUE TITLE</h3>
             <h1 className="main-heading">{issue_data.title || 'No Title Provided'}</h1>
@@ -306,7 +328,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                         "Content-Type" : "application/json",
                         "Authorization" : "Bearer " + localStorage.getItem('token')
                     },
-                    body : JSON.stringify({...new_note, issue : issue_id})
+                    body : JSON.stringify({...new_note, issue : issue_id , notes : removeUnwantedNewLines(new_note.notes)})
                 })
                 if(response.ok){
                     const note_data = await response.json();
@@ -329,7 +351,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                         "Content-Type" : "application/json",
                         "Authorization" : "Bearer " + localStorage.getItem('token')
                     },
-                    body : JSON.stringify({ ...new_note})
+                    body : JSON.stringify({ ...new_note , notes : removeUnwantedNewLines(new_note.notes)})
                 })
                 if(response.ok){
                     dispatch_load_object(['info','Updated Notes Succesfully']);

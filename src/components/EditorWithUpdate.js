@@ -1,7 +1,6 @@
 import { useFormik } from "formik";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import ReactQuill from "react-quill";
-import { LoadingContext } from "../utils/contexts";
 
 const EditorWithUpdate = ({updateFunction , deleteFunction , note_obj , btnText })=>{
     const editor_ref = useRef(null);
