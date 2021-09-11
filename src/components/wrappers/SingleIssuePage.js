@@ -14,7 +14,6 @@ import { faExternalLinkSquareAlt, faPlusCircle } from "@fortawesome/free-solid-s
 import CreateTimeLogForm from "../CreateTimeLogForm";
 import { Link } from "react-router-dom";
 import DeleteModal from "../DeleteModal";
-import { removeUnwantedNewLines } from "../../utils/functions";
 
 const getDateStringForInputBox = (date)=>{
     try{
@@ -62,7 +61,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                             ...values , 
                                 assignee : values.assignee === 'None' ? null : values.assignee , 
                                 reviewer : values.reviewer === 'None' ? null : values.reviewer,
-                                description : removeUnwantedNewLines(values.description)
                         }),
                     headers : {
                         "Content-Type" : 'application/json',
@@ -74,7 +72,6 @@ const EditIssueSection = ({issue_data, set_issue_data})=>{
                     set_issue_data({...values,
                         assignee : issue_data.project.user.filter((user)=>user._id === values.assignee)[0],
                         reviewer : issue_data.project.user.filter((user)=>user._id === values.reviewer)[0],
-                        description : removeUnwantedNewLines(values.description)
                     });
                 }
                 else{
@@ -328,7 +325,7 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                         "Content-Type" : "application/json",
                         "Authorization" : "Bearer " + localStorage.getItem('token')
                     },
-                    body : JSON.stringify({...new_note, issue : issue_id , notes : removeUnwantedNewLines(new_note.notes)})
+                    body : JSON.stringify({...new_note, issue : issue_id})
                 })
                 if(response.ok){
                     const note_data = await response.json();
@@ -344,14 +341,13 @@ const UpdatesWrapper = ({notes , set_notes , issue_id , all_selections})=>{
                 //call insert api
                 //update current list
                 dispatch_load_object(['load' , 'Updating Note']);
-                console.log(new_note);
                 response = await fetch('https://api-redmine.herokuapp.com/api/v1/notes/'+new_note._id , {
                     method : 'PATCH',
                     headers : {
                         "Content-Type" : "application/json",
                         "Authorization" : "Bearer " + localStorage.getItem('token')
                     },
-                    body : JSON.stringify({ ...new_note , notes : removeUnwantedNewLines(new_note.notes)})
+                    body : JSON.stringify(new_note)
                 })
                 if(response.ok){
                     dispatch_load_object(['info','Updated Notes Succesfully']);
